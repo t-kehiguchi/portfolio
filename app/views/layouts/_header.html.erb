@@ -1,0 +1,12 @@
+<header class="navbar navbar-info">
+  <div class="margin">
+    <p id="logo">社内案件マッチング</p>
+    <nav>
+      <ul class="nav navbar-nav navbar-right">
+        <% if logged_in? %>
+          <%= link_to "ログアウト", logout_path, method: :delete, class:"btn btn-primary" %>
+        <% end %>
+      </ul>
+    </nav>
+  </div>
+</header>
