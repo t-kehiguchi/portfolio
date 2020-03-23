@@ -1,0 +1,67 @@
+<% provide(:title, 'エンジニア一覧') %>
+
+<script>
+
+  // tableの行をhover
+  $(function(){
+    $("table tbody tr").hover(function() {
+      $(this).css('background-color','#fafafa');
+    }, function() {
+      $(this).css('background-color','');
+    });
+  });
+
+</script>
+
+<div>
+  <h3>エンジニア一覧</h3>
+  <%= link_to " ＋ エンジニア新規登録", users_new_path, class:"btn btn-primary", :style=>"float:left;" %>
+  <%= link_to "エンジニア検索", users_search_path, class:"btn btn-primary", :style=>"float:right;" %>
+</div>
+
+<%= will_paginate %>
+
+<% if @users.present? %>
+  <table class="table-bordered table-condensed" style="margin-top:75px;">
+    <thead>
+      <tr style="background-color:#ebebeb;">
+        <th>氏名</th>
+        <th>所属</th>
+        <th>年齢</th>
+        <th>最寄駅</th>
+        <th>主要スキル</th>
+        <th style="width:200px;"></th>
+      </tr>
+    </thead>
+    <tbody>
+      <% @users.each do |user| %>
+        <tr>
+          <td><%= link_to user.name, user_detail_path(user) %></td>
+          <td><%= user.department %></td>
+          <td><%= getAge(user.birthday).to_s + "歳" %></td>
+          <td><%= user.nearest_station %></td>
+          <td>
+            <% if getMostExperientedSkillId(user.employee_number) %>
+              <div class="btn btn-primary">
+                <%= getSkillName(getMostExperientedSkillId(user.employee_number)) %>
+              </div>
+            <% else %>
+              なし
+            <% end %>
+          </td>
+          <td>
+            <%= link_to "更新する", users_edit_path(user.employee_number), class: "btn btn-warning" %>
+            <%= link_to "削除する", user_delete_path(user.employee_number), method: :delete,
+              data: { confirm: user.name + "さんの情報を削除してよろしいですか？" }, class: "btn btn-danger" %>
+          </td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+<% else%>
+  <h1 style="margin-top:100px;">
+    該当のエンジニアは存在しません。
+  </h1>
+<% end %>
+
+<%= will_paginate %>

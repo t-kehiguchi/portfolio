@@ -1,0 +1,149 @@
+<% if @actionName == 'new' %>
+  <% provide(:title, 'エンジニア登録確認') %>
+  <% provide(:button_text, '新規登録') %>
+  <% provide(:url, '/users/new') %>
+  <h3>エンジニア登録確認</h3>
+<% elsif @actionName == 'edit' %>
+  <% provide(:title, 'エンジニア更新確認') %>
+  <% provide(:button_text, '更新') %>
+  <% provide(:url, '/users/edit') %>
+  <h3>エンジニア更新確認</h3>
+<% end %>
+
+<script>
+
+    $(document).ready(function(){
+
+      // 保持スキルの高さ調整
+      $('#thSkill').height($('#tdSkill').height());
+
+    });
+
+</script>
+
+<%= form_with model: @user, url: yield(:url), method:"post", local: true do |f| %>
+  <%= fields_for "user" do |u| %>
+    <div style="margin-top:30px; margin-left:auto; margin-right:auto; display:table;">
+
+      <table class="table-bordered table-condensed" style="float:left; width:400px;">
+        <tbody>
+          <tr>
+            <th>社員番号</th>
+          </tr>
+          <tr>
+            <th>氏名</th>
+          </tr>
+          <tr>
+            <th>所属</th>
+          </tr>
+          <tr>
+            <th>生年月日(年齢)</th>
+          </tr>
+          <tr>
+            <th>電話番号</th>
+          </tr>
+          <tr>
+            <th>最寄り駅</th>
+          </tr>
+          <tr>
+            <th>参画可能日</th>
+          </tr>
+          <tr>
+            <th id="thSkill">スキル</th>
+          </tr>
+          <tr>
+            <th>パスワード</th>
+          </tr>
+        </tbody>
+      </table>
+
+      <table class = "table-bordered table-condensed" style="float:left; width:500px;">
+        <tbody>
+          <tr>
+            <td style="text-align:left;">
+              <%= params[:employeeNumber] %>
+              <%= u.hidden_field :employee_number, value: params[:employeeNumber] %>
+            </td>
+          </tr>
+          <tr>
+            <td style="text-align:left;">
+              <%= params[:name] %>
+              <%= u.hidden_field :name, value: params[:name] %>
+            </td>
+          </tr>
+          <tr>
+            <td style="text-align:left;">
+              <%= params[:department] %>
+              <%= u.hidden_field :department, value: params[:department] %>
+            </td>
+          </tr>
+          <tr>
+            <td style="text-align:left;">
+              <%= @birthday_display + '（'+ getAge(@birthday_param).to_s + '歳）' %>
+              <%= u.hidden_field :birthday, value: @birthday_param %>
+            </td>
+          </tr>
+          <tr>
+            <td style="text-align:left;">
+              <%= @telephone_param %>
+              <%= u.hidden_field :telephone_number, value: @telephone_param %>
+            </td>
+          </tr>
+          <tr>
+            <td style="text-align:left;">
+              <%= params[:station] %>
+              <%= u.hidden_field :nearest_station, value: params[:station] %>
+            </td>
+          </tr>
+          <tr>
+            <td style="text-align:left;">
+              <% if @join_param %>
+                <%= @join_display %>
+              <% else %>
+                なし
+              <% end %>
+              <%= u.hidden_field :join_able_date, value: @join_param %>
+            </td>
+          </tr>
+          <tr>
+            <td id="tdSkill" style="text-align:left;">
+              <% if params[:skill].filter {|skill| skill.present?}.count > 0 %>
+                <% @skillList.each do |skill| %>
+                  <% if skill.present? %>
+                    <%= fields_for "possessedSkill[]", skill do |ps| %>
+                      <div style="display:table-row-group;">
+                        <div class="btn btn-primary btn-sm" style="float:left;">
+                          <%= getSkillName(skill[0]) %>
+                        </div>
+                        <p style="float:left; font-size:20px; padding-left:20px; margin-bottom:5px;">
+                          <%= getYearAndMonth(getTotalMonth(skill[1], skill[2])) %>
+                        </p>
+                        <br>
+                        <%= ps.hidden_field :employee_number, value: params[:employeeNumber] %>
+                        <%= ps.hidden_field :skill_id, value: skill[0] %>
+                        <%= ps.hidden_field :month, value: getTotalMonth(skill[1], skill[2]) %>
+                      </div>
+                    <% end %>
+                  <% end %>
+                <% end %>
+              <% else %>
+                なし
+              <% end %>
+            </td>
+          </tr>
+          <tr>
+            <td id="pass" style="text-align:left;">
+              ********
+              <%= u.hidden_field :password, value: params[:password] %>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+
+    </div>
+
+    <input type="submit" class="btn btn-primary" value="<%= yield(:button_text) %>"
+      style="width:50%; margin:auto; margin-top:50px; display:block;"></input>
+
+  <% end %>
+<% end %>

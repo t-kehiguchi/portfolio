@@ -1,10 +1,27 @@
 <header class="navbar navbar-info">
-  <div class="margin">
+  <div class="container">
     <p id="logo">社内案件マッチング</p>
     <nav>
       <ul class="nav navbar-nav navbar-right">
         <% if logged_in? %>
-          <%= link_to "ログアウト", logout_path, method: :delete, class:"btn btn-primary" %>
+          <% if current_user.admin_flag? %>
+            <li>
+              <%= link_to "Employee", users_path %>
+            </li>
+            <li>
+              <%= link_to "Profile", user_detail_path(current_user) %>
+            </li>
+          <% else %>
+            <li>
+              <%= link_to "Profile", user_detail_path(current_user) %>
+            </li>
+            <li>
+              <%= link_to "Edit", users_edit_path(current_user) %>
+            </li>
+          <% end %>
+          <li>
+            <%= link_to "Logout", logout_path, method: :delete, class:"btn btn-primary" %>
+          </li>
         <% end %>
       </ul>
     </nav>

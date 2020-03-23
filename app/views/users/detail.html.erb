@@ -1,0 +1,112 @@
+<% provide(:title, 'エンジニア詳細') %>
+
+<script>
+
+  $(document).ready(function(){
+
+    // 保持スキルの高さ調整
+    $('#thSkill').height($('#tdSkill').height());
+
+    // スキルアイコンを触れると経験年数吹き出しが出る
+    $("#tdSkill div").hover(
+      function(){
+        var width = $(this).width();
+        $(this).width(width);
+        var text = $(this).find('#month').val();
+        $(this).append('<div class="tooltips">'+text+'</div>');
+        // 吹き出しの幅は75px
+        $('.tooltips').width(75);
+      },
+      function(){
+        $(this).find(".tooltips").remove();
+      }
+    );
+
+  })
+
+</script>
+
+<h3>エンジニア詳細</h3>
+
+<div style="margin-top:30px; margin-left:auto; margin-right:auto; display:table;">
+  <table class="table-bordered table-condensed" style="float:left; width:400px;">
+    <tbody>
+      <tr>
+        <th>社員番号</th>
+      </tr>
+      <tr>
+        <th>氏名</th>
+      </tr>
+      <tr>
+        <th>所属</th>
+      </tr>
+      <tr>
+        <th>生年月日(年齢)</th>
+      </tr>
+      <tr>
+        <th>電話番号</th>
+      </tr>
+      <tr>
+        <th>最寄り駅</th>
+      </tr>
+      <% unless @user.admin_flag? %>
+        <tr>
+          <th>参画可能日</th>
+        </tr>
+        <tr>
+          <th id="thSkill">保持スキル</th>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+
+  <table class = "table-bordered table-condensed" style="float:left; width:500px;">
+    <tbody>
+      <tr>
+        <td style="text-align:left;"><%= @user.employee_number %></td>
+      </tr>
+      <tr>
+        <td style="text-align:left;"><%= @user.name %></td>
+      </tr>
+      <tr>
+        <td style="text-align:left;"><%= @user.department %></td>
+      </tr>
+      <tr>
+        <td style="text-align:left;">
+          <%= @user.birthday.to_date.strftime('%Y年%-m月%-d日') + "（"+ getAge(@user.birthday).to_s + "歳）"%>
+        </td>
+      </tr>
+      <tr>
+        <td style="text-align:left;"><%= @user.telephone_number %></td>
+      </tr>
+      <tr>
+        <td style="text-align:left;"><%= @user.nearest_station %></td>
+      </tr>
+      <% unless @user.admin_flag? %>
+        <tr>
+          <td style="text-align:left;">
+            <% if @user.join_able_date.present? %>
+              <%= @user.join_able_date.to_date.strftime('%Y年%-m月%-d日') + ' ～' %>
+            <% else %>
+            なし(案件参画中)
+            <% end %>
+          </td>
+        </tr>
+        <tr>
+          <td id="tdSkill" style="text-align:left;">
+            <% unless @possessedSkills.empty? %>
+              <% @possessedSkills.each do |possessedSkill| %>
+                <div class="btn btn-primary btn-sm">
+                  <input type="hidden" name="month" id="month" value=<%= getYearAndMonth(possessedSkill.month) %>>
+                  <%= getSkillName(possessedSkill.skill_id) %>
+                </div>
+              <% end %>
+            <% else %>
+              なし
+            <% end %>
+          </td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+</div>

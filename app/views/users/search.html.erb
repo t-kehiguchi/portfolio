@@ -1,0 +1,62 @@
+<% provide(:title, 'エンジニア検索') %>
+<% provide(:button_text, '検索') %>
+
+<script>
+  
+  function check() {
+
+    var validationCheck = true;
+
+    // 年齢のチェック
+    var ageFrom = $('.ageFrom').val();
+    var ageTo = $('.ageTo').val();
+    // 片方だけ入っている場合
+    if((!ageFrom && ageTo) || (ageFrom && !ageTo)) {
+      alert('年齢は片方のみ入力できません。');
+      validationCheck = false;
+    // ageFrom > ageTo の場合
+    } else if(ageFrom && ageTo) {
+      if(ageFrom > ageTo) {
+        alert(ageTo + '歳　～　' + ageFrom + '歳で入力してください。');
+        validationCheck = false;
+      }
+    }
+
+    return validationCheck;
+  }
+  
+</script>
+
+<h3>検索条件</h3>
+
+<%= form_with url: user_search_path, method:"post", class:"search_form" do |f| %>
+
+  <%= f.label "氏名" %>
+  <%= f.text_field :name, class: 'form-control', :style=>"width:60%;" %>
+
+  <%= f.label "年齢" %>
+  <div>
+    <%= f.text_field :age_from, class: 'form-control ageFrom', :style=>"width:25%; float: left;" %>
+      <p id="age">歳　～　</p>
+    <%= f.text_field :age_to, class: 'form-control ageTo', :style=>"width:25%; float: left;" %>
+      <p id="age">歳</p>
+  </div>
+
+  <table class="skill" style="margin-top:50px;">
+    <th style="width:150px;"><%= f.label "保持スキル" %></th>
+    <td style="font-weight:700; text-align:left;">
+      <% @skills.each_with_index do |skill, index| %>
+        <% if index > 0 and index.to_i.modulo(5) == 0 %>
+          <br>
+        <% end %>
+        <input type="checkbox" name="skills[]" value="<%= skill.skill_id %>">
+          <%= skill.skill_name %>
+        </input>
+      <% end %>
+    </td>
+  </table>
+
+  <input type="submit" class="btn btn-primary" value="<%= yield(:button_text) %>"
+    style="width:50%; margin:auto; margin-top:50px; display:block;" onClick="return check();"></input>
+
+<% end %>

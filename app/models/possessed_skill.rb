@@ -1,0 +1,2 @@
+class PossessedSkill < ApplicationRecord
+end
