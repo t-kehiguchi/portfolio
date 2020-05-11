@@ -10,12 +10,52 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20200216000000) do
+ActiveRecord::Schema.define(version: 20200327000000) do
 
   create_table "possessed_skills", primary_key: ["employee_number", "skill_id"], force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8" do |t|
     t.integer "employee_number", default: 0, null: false
     t.integer "skill_id", default: 0, null: false
     t.integer "month", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "project_members", primary_key: "project_id", id: :string, force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8" do |t|
+    t.integer "employee_number", null: false
+    t.string "start_date", null: false
+    t.string "end_date"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "project_must_skills", primary_key: ["project_id", "must_skill_id"], force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8" do |t|
+    t.string "project_id", default: "", null: false
+    t.integer "must_skill_id", default: 0, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "project_want_skills", primary_key: ["project_id", "want_skill_id"], force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8" do |t|
+    t.string "project_id", default: "", null: false
+    t.integer "want_skill_id", default: 0, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "projects", primary_key: "project_id", id: :string, force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8" do |t|
+    t.string "project_name", null: false
+    t.string "content", null: false
+    t.string "environment"
+    t.integer "price_min"
+    t.integer "price_max"
+    t.integer "min", null: false
+    t.integer "max", null: false
+    t.string "start_date", null: false
+    t.string "end_date"
+    t.string "start_time"
+    t.string "end_time"
+    t.string "working_place", null: false
+    t.string "description"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end

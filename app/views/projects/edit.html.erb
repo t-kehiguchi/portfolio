@@ -1,9 +1,9 @@
-<% provide(:title, '案件新規') %>
-<% provide(:button_text, '登録確認') %>
+<% provide(:title, '案件情報更新') %>
+<% provide(:button_text, '更新確認') %>
 
 <script>
 
-  // 「登録確認」ボタン時のバリデーションチェック
+  // 「更新確認」ボタン時のバリデーションチェック
   function check() {
 
     var validationCheck = true;
@@ -144,14 +144,14 @@
       // 年/月/日の形式のみ許容する
       if(!strDate.match(/^\d{4}\/\d{1,2}\/\d{1,2}$/)){
         return false;
-      }
+      } 
 
       // 日付変換された日付が入力値と同じ事を確認
       // new Date()の引数に不正な日付が入力された場合、
       // 相当する日付に変換されてしまうため
-      var date = new Date(strDate);
-      if(date.getFullYear() !=  strDate.split("/")[0]
-        || date.getMonth() != strDate.split("/")[1] - 1
+      var date = new Date(strDate);  
+      if(date.getFullYear() !=  strDate.split("/")[0] 
+        || date.getMonth() != strDate.split("/")[1] - 1 
         || date.getDate() != strDate.split("/")[2]
       ){
         return false;
@@ -213,18 +213,18 @@
 </script>
 
 <div>
-  <h3 style="float:left;">案件新規</h3>
+  <h3 style="float:left;">案件情報更新</h3>
   <h4 style="float:right;"><p style="color:red;">※　必須項目</p></h4>
 </div>
 
 <%= form_with url: project_confirm_path, method:"post", local: true, class:"search_form" do |f| %>
 
-  <input type="hidden" name="projectId" value="<%= @project_id %>">
+  <input type="hidden" name="projectId" value="<%= @project.project_id %>">
 
   <table id="new" style="margin-top:75px;">
     <tr>
       <th style="width:250px;">案件ID</th>
-      <td style="text-align:left; font-size:25px; font-weight:700;"><%= @project_id %></td>
+      <td style="text-align:left; font-size:25px; font-weight:700;"><%= @project.project_id %></td>
     </tr>
     <tr>
       <th>
@@ -234,7 +234,7 @@
         </div>
       </th>
       <td>
-        <%= f.text_field :projectName, class: 'form-control', :id=>"projectName" %>
+        <%= f.text_field :projectName, value: @project.project_name, class: 'form-control', :id=>"projectName" %>
       </td>
     </tr>
     <tr>
@@ -245,7 +245,7 @@
         </div>
       </th>
       <td>
-        <%= f.text_area :content, class: 'form-control', :id=>"content" %>
+        <%= f.text_area :content, value: @project.content, class: 'form-control', :id=>"content" %>
       </td>
     </tr>
     <tr>
@@ -255,7 +255,7 @@
         </div>
       </th>
       <td>
-        <%= f.text_area :environment, class: 'form-control', :id=>"environment" %>
+        <%= f.text_area :environment, value: @project.environment, class: 'form-control', :id=>"environment" %>
       </td>
     </tr>
     <tr>
@@ -266,7 +266,7 @@
         </div>
       </th>
       <td>
-        <%= f.text_field :workingPlace, class: 'form-control', :id=>"workingPlace", :style=>"width:60%;" %>
+        <%= f.text_field :workingPlace, value: @project.working_place, class: 'form-control', :id=>"workingPlace", :style=>"width:60%;" %>
       </td>
     </tr>
     <tr>
@@ -278,9 +278,9 @@
       </th>
       <td>
         <div>
-          <%= f.text_field :priceMin, class: 'form-control', :id=>"priceMin", :style=>"width:20%; float: left;" %>
+          <%= f.text_field :priceMin, value: @project.price_min, class: 'form-control', :id=>"priceMin", :style=>"width:20%; float: left;" %>
           <p id="price">円　～　</p>
-          <%= f.text_field :priceMax, class: 'form-control', :id=>"priceMax", :style=>"width:20%; float: left;" %>
+          <%= f.text_field :priceMax, value: @project.price_max, class: 'form-control', :id=>"priceMax", :style=>"width:20%; float: left;" %>
           <p id="price">円</p>
         </div>
       </td>
@@ -294,9 +294,9 @@
       </th>
       <td>
         <div>
-          <%= f.text_field :hourMin, class: 'form-control', :id=>"hourMin", :style=>"width:10%; float: left;" %>
+          <%= f.text_field :hourMin, value: @project.min, class: 'form-control', :id=>"hourMin", :style=>"width:10%; float: left;" %>
           <p id="time">H　～　</p>
-          <%= f.text_field :hourMax, class: 'form-control', :id=>"hourMax", :style=>"width:10%; float: left;" %>
+          <%= f.text_field :hourMax, value: @project.max, class: 'form-control', :id=>"hourMax", :style=>"width:10%; float: left;" %>
           <p id="time">H</p>
         </div>
       </td>
@@ -310,16 +310,16 @@
       </th>
       <td>
         <div>
-          <%= f.collection_select :start_year, getStartOrEndYearMap(nil), :first, :last,
-            { include_blank: true, selected: "" }, class: 'form-control',
+          <%= f.collection_select :start_year, getStartOrEndYearMap(@project.start_date), :first, :last,
+            { include_blank: true, selected: getThree(@project.start_date, 'first').to_i }, class: 'form-control', 
               :style=>"float:left; margin-bottom:0px; width:15%;" %>
             <p id="date"> 年 </p>
           <%= f.collection_select :start_month, getMonthMap, :first, :last,
-            { include_blank: true, selected: "" }, class: 'form-control',
+            { include_blank: true, selected: getThree(@project.start_date, 'second').to_i }, class: 'form-control', 
               :style=>"float:left; margin-bottom:0px; width:15%;" %>
             <p id="date"> 月 </p>
           <%= f.collection_select :start_day, getDayMap, :first, :last,
-            { include_blank: true, selected: "" }, class: 'form-control',
+            { include_blank: true, selected: getThree(@project.start_date, 'third').to_i }, class: 'form-control', 
               :style=>"float:left; margin-bottom:0px; width:15%;" %>
             <p id="date"> 日 </p>
         </div>
@@ -333,16 +333,16 @@
       </th>
       <td>
         <div>
-          <%= f.collection_select :end_year, getStartOrEndYearMap(nil), :first, :last,
-            { include_blank: true, selected: "" }, class: 'form-control',
+          <%= f.collection_select :end_year, getStartOrEndYearMap(@project.end_date, params[:id]), :first, :last,
+            { include_blank: true, selected: getThree(@project.end_date, 'first').to_i }, class: 'form-control', 
               :style=>"float:left; margin-bottom:0px; width:15%;" %>
             <p id="date"> 年 </p>
           <%= f.collection_select :end_month, getMonthMap, :first, :last,
-            { include_blank: true, selected: "" }, class: 'form-control',
+            { include_blank: true, selected: getThree(@project.end_date, 'second').to_i }, class: 'form-control', 
               :style=>"float:left; margin-bottom:0px; width:15%;" %>
             <p id="date"> 月 </p>
           <%= f.collection_select :end_day, getDayMap, :first, :last,
-            { include_blank: true, selected: "" }, class: 'form-control',
+            { include_blank: true, selected: getThree(@project.end_date, 'third').to_i }, class: 'form-control', 
               :style=>"float:left; margin-bottom:0px; width:15%;" %>
             <p id="date"> 日 </p>
         </div>
@@ -357,19 +357,19 @@
       <td>
         <div>
           <%= f.collection_select :time_from_hour, getHourMap, :first, :last,
-            { include_blank: true, selected: "" }, class: 'form-control',
+            { include_blank: true, selected: getTwo(@project.start_time, 'first').to_i }, class: 'form-control', 
               :style=>"float:left; margin-bottom:0px; width:15%;" %>
             <p id="time"> ： </p>
           <%= f.collection_select :time_from_minites, getMinutesMap, :first, :last,
-            { include_blank: true, selected: "" }, class: 'form-control',
+            { include_blank: true, selected: getTwo(@project.start_time, 'second').to_i }, class: 'form-control', 
               :style=>"float:left; margin-bottom:0px; width:15%;" %>
             <p id="time"> ～ </p>
           <%= f.collection_select :time_to_hour, getHourMap, :first, :last,
-            { include_blank: true, selected: "" }, class: 'form-control',
+            { include_blank: true, selected: getTwo(@project.end_time, 'first').to_i }, class: 'form-control', 
               :style=>"float:left; margin-bottom:0px; width:15%;" %>
             <p id="time"> ： </p>
           <%= f.collection_select :time_to_minites, getMinutesMap, :first, :last,
-            { include_blank: true, selected: "" }, class: 'form-control',
+            { include_blank: true, selected: getTwo(@project.end_time, 'second').to_i }, class: 'form-control', 
               :style=>"float:left; margin-bottom:0px; width:15%;" %>
         </div>
       </td>
@@ -381,7 +381,7 @@
         </div>
       </th>
       <td>
-        <%= f.text_area :description, class: 'form-control', :id=>"description" %>
+        <%= f.text_area :description, value: @project.description, class: 'form-control', :id=>"description" %>
       </td>
     </tr>
     <tr>
@@ -395,7 +395,14 @@
         <div style="text-align:left;">
           <div id="addMust" class="btn btn-primary">必須スキル追加</div>
         </div>
-        <div id="mustSkill" style="text-align:left; margin-top:10px;"></div>
+        <div id="mustSkill" style="text-align:left; margin-top:10px;">
+          <% @must.each_with_index do |m, index| %>
+            <div class="btn btn-primary">
+              <%= getSkillName(m.must_skill_id) %>
+              <input type="hidden" name="mustSkill[]" value="<%= m.must_skill_id %>">
+            </div>
+          <% end %>
+        </div>
         <div id="select" style="display:none;">
           <%= f.collection_select :skill, @skills, :first, :last,
             { include_blank: true }, class: 'form-control', :id=>"mustSelect",
@@ -409,7 +416,14 @@
         <div style="text-align:left;">
           <div id="addWant" class="btn btn-primary">尚可スキル追加</div>
         </div>
-        <div id="wantSkill" style="text-align:left; margin-top:10px;"></div>
+        <div id="wantSkill" style="text-align:left; margin-top:10px;">
+          <% @want.each_with_index do |m, index| %>
+            <div class="btn btn-primary">
+              <%= getSkillName(m.want_skill_id) %>
+              <input type="hidden" name="wantSkill[]" value="<%= m.want_skill_id %>">
+            </div>
+          <% end %>
+        </div>
         <div id="select" style="display:none;">
           <%= f.collection_select :skill, @skills, :first, :last,
             { include_blank: true }, class: 'form-control', :id=>"wantSelect",

@@ -1,0 +1,204 @@
+<% if @actionName == 'new' %>
+  <% provide(:title, '案件登録確認') %>
+  <% provide(:button_text, '新規登録') %>
+  <% provide(:url, '/projects/new') %>
+  <h3>案件登録確認</h3>
+<% elsif @actionName == 'edit' %>
+  <% provide(:title, '案件更新確認') %>
+  <% provide(:button_text, '更新') %>
+  <% provide(:url, '/projects/edit') %>
+  <h3>案件更新確認</h3>
+<% end %>
+
+<script>
+
+  $(document).ready(function(){
+
+    // 未入力OK(環境、備考 etc)の高さ調整
+    if(!$('#tdEnvironment').text().trim()) { // 環境
+      $('#tdEnvironment').height($('#thEnvironment').height());
+    }
+    if(!$('#tdDescription').text().trim()) { // 備考
+      $('#tdDescription').height($('#thDescription').height());
+    }
+
+    // 保持スキルの高さ調整
+    $('#thMustSkill').height($('#tdMustSkill').height());
+    $('#thWantSkill').height($('#tdWantSkill').height());
+
+  });
+
+</script>
+
+<%= form_with model: @project, url: yield(:url), method:"post", local: true do |f| %>
+  <%= fields_for "project" do |u| %>
+    <div style="margin-top:30px; margin-left:auto; margin-right:auto; display:table;">
+
+      <table class="table-bordered table-condensed" style="float:left; width:400px;">
+        <tbody>
+          <tr>
+            <th>案件ID</th>
+          </tr>
+          <tr>
+            <th>案件名</th>
+          </tr>
+          <tr>
+            <th>案件内容</th>
+          </tr>
+          <tr>
+            <th id="thEnvironment">環境</th>
+          </tr>
+          <tr>
+            <th>作業場所</th>
+          </tr>
+          <tr>
+            <th>単価</th>
+          </tr>
+          <tr>
+            <th>精算幅</th>
+          </tr>
+          <tr>
+            <th>案件開始日</th>
+          </tr>
+          <tr>
+            <th>案件終了予定日</th>
+          </tr>
+          <tr>
+            <th>時間</th>
+          </tr>
+          <tr>
+            <th id="thDescription">備考</th>
+          </tr>
+          <tr>
+            <th id="thMustSkill">必須スキル</th>
+          </tr>
+          <tr>
+            <th id="thWantSkill">尚可スキル</th>
+          </tr>
+        </tbody>
+      </table>
+
+      <table class = "table-bordered table-condensed" style="float:left; width:500px;">
+        <tbody>
+          <tr>
+            <td style="text-align:left;">
+              <%= params[:projectId] %>
+              <%= u.hidden_field :project_id, value: params[:projectId] %>
+            </td>
+          </tr>
+          <tr>
+            <td style="text-align:left;">
+              <%= params[:projectName] %>
+              <%= u.hidden_field :project_name, value: params[:projectName] %>
+            </td>
+          </tr>
+          <tr>
+            <td style="text-align:left;">
+              <%= params[:content] %>
+              <%= u.hidden_field :content, value: params[:content] %>
+            </td>
+          </tr>
+          <tr>
+            <td id="tdEnvironment" style="text-align:left;">
+              <%= params[:environment] %>
+              <%= u.hidden_field :environment, value: params[:environment] %>
+            </td>
+          </tr>
+          <tr>
+            <td style="text-align:left;">
+              <%= params[:workingPlace] %>
+              <%= u.hidden_field :working_place, value: params[:workingPlace] %>
+            </td>
+          </tr>
+          <tr>
+            <td style="text-align:left;">
+              <%= params[:priceMin].present? ? getPriceDisplay(params[:priceMin].to_i) : "" %>
+                ～ <%= params[:priceMax].present? ? getPriceDisplay(params[:priceMax].to_i) : "" %>
+              <%= u.hidden_field :price_min, value: params[:priceMin] %>
+              <%= u.hidden_field :price_max, value: params[:priceMax] %>
+            </td>
+          </tr>
+          <tr>
+            <td style="text-align:left;">
+              <%= params[:hourMin] %>H　～　<%= params[:hourMax] %>H
+              <%= u.hidden_field :min, value: params[:hourMin] %>
+              <%= u.hidden_field :max, value: params[:hourMax] %>
+            </td>
+          </tr>
+          <tr>
+            <td style="text-align:left;">
+              <%= @start_display %>
+              <%= u.hidden_field :start_date, value: @start_param %>
+            </td>
+          </tr>
+          <tr>
+            <td style="text-align:left;">
+              <% if @end_param %>
+                <%= @end_display %>
+              <% else %>
+                なし
+              <% end %>
+              <%= u.hidden_field :end_date, value: @end_param %>
+            </td>
+          </tr>
+          <tr>
+            <td style="text-align:left;">
+              <% if @startTime.present? and @endTime.present? %>
+                <%= @startTime %>　～　<%= @endTime %>
+              <% else %>
+                なし
+              <% end %>
+              <%= u.hidden_field :start_time, value: @startTime %>
+              <%= u.hidden_field :end_time, value: @endTime %>
+            </td>
+          </tr>
+          <tr>
+            <td id="tdDescription" style="text-align:left;">
+              <%= params[:description] %>
+              <%= u.hidden_field :description, value: params[:description] %>
+            </td>
+          </tr>
+          <tr>
+            <td id="tdMustSkill" style="text-align:left;">
+              <div style="display:table-row-group;">
+                <% @must.each_with_index do |mustSkill, index| %>
+                  <% if index > 0 and index.modulo(3) == 0 %>
+                    <br><div style="margin-top:15px;"></div>
+                  <% end %>
+                  <div class="btn btn-primary btn-sm" style="float:left; margin-right:5px;">
+                    <%= getSkillName(mustSkill) %>
+                    <input type="hidden" name="mustSkill[]" value="<%= mustSkill %>">
+                  </div>
+                <% end %>
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <td id="tdWantSkill" style="text-align:left;">
+              <% if @want %>
+                <div style="display:table-row-group;">
+                  <% @want.each_with_index do |wantSkill, index| %>
+                    <% if index > 0 and index.modulo(3) == 0 %>
+                      <br><div style="margin-top:15px;"></div>
+                    <% end %>
+                    <div class="btn btn-primary btn-sm" style="float:left; margin-right:5px;">
+                      <%= getSkillName(wantSkill) %>
+                      <input type="hidden" name="wantSkill[]" value="<%= wantSkill %>">
+                    </div>
+                  <% end %>
+                </div>
+              <% else %>
+                なし
+              <% end %>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+
+    </div>
+
+    <input type="submit" class="btn btn-primary" value="<%= yield(:button_text) %>"
+      style="width:50%; margin:auto; margin-top:50px; display:block;"></input>
+
+  <% end %>
+<% end %>

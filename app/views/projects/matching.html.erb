@@ -1,0 +1,67 @@
+<% provide(:title, '案件マッチング') %>
+
+<script>
+
+  // tableの行をhover
+  $(function(){
+    $("table tbody tr").hover(function() {
+      $(this).css('background-color','#fafafa');
+    }, function() {
+      $(this).css('background-color','');
+    });
+  });
+
+  // プログレスバーを触れるとマッチング率吹き出しが出る
+  $(document).ready(
+    function(){
+      $('progress#rate').hover(function(e) {
+        var text = $(this).val() + ' ％';
+        $(this).parent().append('<div class="tooltips">'+text+'</div>');
+        // 吹き出しの幅・高さ・位置などを設定
+        $('.tooltips').css({
+          width:"75px", height:"30px", left:e.pageX, top:e.pageY
+        });
+      }, function() {
+        $('.tooltips').remove();
+      });
+    }
+  );
+
+</script>
+
+<div>
+  <h3>案件「<%= Project.find(params[:id]).project_name %>」の案件マッチング</h3>
+</div>
+
+<table class="table-bordered table-condensed" style="margin-top:50px;">
+  <thead>
+    <tr style="background-color:#ebebeb;">
+      <th>氏名</th>
+      <th>所属</th>
+      <th>最寄り駅</th>
+      <th>参画中</th>
+      <th>マッチング率</th>
+    </tr>
+  </thead>
+  <tbody>
+    <% @matching.keys.each_with_index do |m, index| %>
+      <tr style="height:50px;">
+        <td><%= link_to getUser(m).name, user_detail_path(m) %></td>
+        <td><%= getUser(m).department %></td>
+        <td><%= getUser(m).nearest_station %></td>
+        <td>
+          <% if ProjectMember.where("project_id = ? AND employee_number = ? AND end_date is null", params[:id], m).present? %>
+            この案件に参画中
+          <% elsif ProjectMember.where("project_id <> ? AND employee_number = ? AND end_date is null", params[:id], m).present? %>
+            <%= link_to '別の案件に参画中', project_detail_path(ProjectMember.where("project_id <> ? AND employee_number = ? AND end_date is null", params[:id], m).maximum(:project_id)) %>
+          <% else %>
+            未参画
+          <% end %>
+        </td>
+        <td id="matchingRate">
+          <progress max="100" id="rate" value="<%= @matching[m] %>" style="vertical-align: middle;"></progress>
+        </td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>

@@ -9,9 +9,15 @@
               <%= link_to "Employee", users_path %>
             </li>
             <li>
+              <%= link_to "Project", projects_path %>
+            </li>
+            <li>
               <%= link_to "Profile", user_detail_path(current_user) %>
             </li>
           <% else %>
+            <li>
+              <%= link_to "Project", projects_path %>
+            </li>
             <li>
               <%= link_to "Profile", user_detail_path(current_user) %>
             </li>

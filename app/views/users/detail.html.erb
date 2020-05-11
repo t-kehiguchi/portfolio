@@ -85,10 +85,14 @@
       <% unless @user.admin_flag? %>
         <tr>
           <td style="text-align:left;">
-            <% if @user.join_able_date.present? %>
-              <%= @user.join_able_date.to_date.strftime('%Y年%-m月%-d日') + ' ～' %>
+            <% unless @join.present? %>
+              <% if @user.join_able_date.present? %>
+                <%= @user.join_able_date.to_date.strftime('%Y年%-m月%-d日') + ' ～' %>
+              <% else %>
+                未定
+              <% end %>
             <% else %>
-            なし(案件参画中)
+            案件参画中
             <% end %>
           </td>
         </tr>

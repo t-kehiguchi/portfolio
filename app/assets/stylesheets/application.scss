@@ -135,7 +135,7 @@ table#new td {
   }
 }
 
-p#tel, p#birth, p#join {
+p#tel, p#birth, p#join, p#price, p#time, p#date {
   float: left;
   margin-left: 5px;
   margin-right: 5px;
@@ -204,3 +204,18 @@ table.skill td input{
   display: inline-block;
 }
 
+/* Projects index */
+table#project > thead > tr {
+  > th {
+    background-color: #ebebeb;
+    width: 250px;
+  }
+  > td {
+    padding-left: 10px;
+    text-align: left;
+  }
+  > td#projectName {
+    font-size: 25px;
+    border: none;
+  }
+}

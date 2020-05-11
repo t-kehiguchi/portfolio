@@ -211,6 +211,8 @@ class UsersController < ApplicationController
     @user = getUser(params[:id])
     invalidUrl(@user)
     @possessedSkills = PossessedSkill.where(employee_number: params[:id]).order(month: "DESC")
+    ## 参画しているか(終了日がnil)
+    @join = ProjectMember.where("employee_number = ? AND end_date is null", params[:id]).order(start_date: "DESC").first
   end
 
   def index
@@ -222,7 +224,7 @@ class UsersController < ApplicationController
       @@result = []
     else
       ## エンジニア(一般ユーザー)のみ抽出
-      @users = getAllUser.where(admin_flag: false).paginate(page: params[:page])
+      @users = getAllUser.engineer.paginate(page: params[:page])
     end
   end
 
