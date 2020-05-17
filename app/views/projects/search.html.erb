@@ -1,6 +1,54 @@
 <% provide(:title, '案件検索') %>
 <% provide(:button_text, '検索') %>
 
+<script>
+
+  $(document).ready(function(){
+
+    var skills = [];
+
+    // 「単価」プルダウンに変更を加えたら発動
+    $('select[name="price"]').change(function() {
+      var val = $(this).val();
+      getSelectCountWithApi(val, skills, $('select[name="engineer"]').val());
+    });
+
+    // 「スキル」チェックボックスをチェックしたら発動
+    $('input[name="skills[]"]').change(function() {
+      // 外した場合も考慮して
+      skills = [];
+      $('input[name="skills[]"]:checked').each(function() {
+        skills.push($(this).val());
+      });
+      getSelectCountWithApi($('select[name="price"]').val(), skills, $('select[name="engineer"]').val());
+    });
+
+    // 「エンジニア」プルダウンに変更を加えたら発動
+    $('select[name="engineer"]').change(function() {
+      var val = $(this).val();
+      getSelectCountWithApi($('select[name="price"]').val(), skills, val);
+    });
+
+  });
+
+  // 単価、スキル、エンジニアの入力・選択時に該当する件数を取得するAPIを連携するメソッド
+  function getSelectCountWithApi(price, skills, engineer) {
+    $.ajax({
+      url: '/api/v1/projects/search',
+      type: 'POST',
+      data: {
+        price: price,
+        skills: skills,
+        engineer: engineer
+      },
+      dataType: 'json'
+    }).done(function(data){
+      $('#count').text(data);
+    });
+  }
+
+</script>
+
 <h3>検索条件</h3>
 
 <%= form_with url: project_search_path, method:"post", class:"search_form" do |f| %>
@@ -25,7 +73,13 @@
   <%= f.label "エンジニア" %>
   <%= f.collection_select :engineer, @engineers, :first, :last, { include_blank: true, selected: "" }, class: 'form-control', :style=>"width:60%;" %>
 
-  <input type="submit" class="btn btn-primary" value="<%= yield(:button_text) %>"
-    style="width:50%; margin:auto; margin-top:50px; display:block;" onClick="return check();"></input>
+  <div style="margin-top:50px;">
+    <p id="count" style="float:left; font-weight:700; font-size:25px; color:#f0ad4e;"><%= @count %></p>
+    <p style="float:left; font-weight:600; margin-bottom:0px; margin-top:10px; margin-left:5px;">
+      件見つかりました
+    </p>
+    <input type="submit" class="btn btn-primary" value="<%= yield(:button_text) %>"
+      style="width:25%; margin-left:100px;" onClick="return check();"></input>
+  </div>
 
 <% end %>

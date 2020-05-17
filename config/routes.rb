@@ -24,4 +24,10 @@ Rails.application.routes.draw do
   get    'projects/search' , to: 'projects#search'
   post   'projects/search',  to: 'projects#search', as: 'project_search'
   get    'projects/:id/matching' , to: 'projects#matching', as: 'project_matching'
+  namespace 'api' do
+    namespace 'v1' do
+      post   'users/search',  to: 'users#search', as: 'user_search'
+      post   'projects/search',  to: 'projects#search', as: 'project_search'
+    end
+  end
 end

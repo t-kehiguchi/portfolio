@@ -24,6 +24,70 @@
 
     return validationCheck;
   }
+
+  $(document).ready(function(){
+
+    var skills = [];
+
+    // 「氏名」テキストボックスに変更を加えたら発動
+    $('input[name="name"]').change(function() {
+      var val = $(this).val();
+      getSelectCountWithApi(val, $('input[name="age_from"]').val(), $('input[name="age_to"]').val(), skills);
+    });
+
+    // 「年齢」テキストボックスに変更を加えたら発動
+    $('input[name="age_from"], input[name="age_to"]').change(function() {
+      var hash = {'from':'', 'to':''};
+      var val = $(this).val();
+      // 未入力(入力を外した) or 値が数値の場合
+      if((val == null || val == '') || $.isNumeric(val)) {
+        // 年齢(From)が入力された場合
+        if($(this).attr("name") == "age_from") {
+          hash['from'] = val;
+          hash['to'] = $('input[name="age_to"]').val();
+        // 年齢(To)が入力された場合
+        } else if($(this).attr("name") == "age_to") {
+          hash['from'] = $('input[name="age_from"]').val();
+          hash['to'] = val;
+        }
+        // 未入力 or 両方入力 の場合のみ呼び出す
+        if(
+            ((hash['from'] == null || hash['from'] == '') && (hash['to'] == null || hash['to'] == ''))
+              || ((hash['from'] != null && hash['from'] != '') && (hash['to'] != null && hash['to'] != ''))
+        ) {
+          getSelectCountWithApi($('input[name="name"]').val(), hash['from'], hash['to'], skills);
+        }
+      }
+    });
+
+    // 「スキル」チェックボックスをチェックしたら発動
+    $('input[name="skills[]"]').change(function() {
+      // 外した場合も考慮して
+      skills = [];
+      $('input[name="skills[]"]:checked').each(function() {
+        skills.push($(this).val());
+      });
+      getSelectCountWithApi($('input[name="name"]').val(), $('input[name="age_from"]').val(), $('input[name="age_to"]').val(), skills);
+    });
+
+  });
+
+  // 氏名、年齢、スキルの入力・選択時に該当する件数を取得するAPIを連携するメソッド
+  function getSelectCountWithApi(name, ageFrom, ageTo, skills) {
+    $.ajax({
+      url: '/api/v1/users/search',
+      type: 'POST',
+      data: {
+        name: name,
+        age_from: ageFrom,
+        age_to: ageTo,
+        skills: skills
+      },
+      dataType: 'json'
+    }).done(function(data){
+      $('#count').text(data);
+    });
+  }
   
 </script>
 
@@ -56,7 +120,13 @@
     </td>
   </table>
 
-  <input type="submit" class="btn btn-primary" value="<%= yield(:button_text) %>"
-    style="width:50%; margin:auto; margin-top:50px; display:block;" onClick="return check();"></input>
+  <div style="margin-top:50px;">
+    <p id="count" style="float:left; font-weight:700; font-size:25px; color:#f0ad4e;"><%= @count %></p>
+    <p style="float:left; font-weight:600; margin-bottom:0px; margin-top:10px; margin-left:5px;">
+      件見つかりました
+    </p>
+    <input type="submit" class="btn btn-primary" value="<%= yield(:button_text) %>"
+      style="width:25%; margin-left:100px;" onClick="return check();"></input>
+  </div>
 
 <% end %>

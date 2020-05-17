@@ -146,9 +146,9 @@ class ProjectsController < ApplicationController
         if params[:price].include?("BETWEEN")
           min = params[:price]["BETWEEN".length+1..params[:price].index("AND")-2]
           max = params[:price][params[:price].index("AND")+"AND".length+1..]
-          jouken[0] = sprintf(" AND (price_min IS NOT NULL AND price_max IS NOT NULL AND (price_min %s OR price_max %s))
+          jouken[0] = sprintf(" AND ((price_min IS NOT NULL AND price_max IS NOT NULL AND (price_min %s OR price_max %s))
                                   OR (price_min IS NULL AND price_max IS NOT NULL AND price_max <= %d)
-                                    OR (price_min IS NOT NULL AND price_max IS NULL AND price_min <= %d)",
+                                    OR (price_min IS NOT NULL AND price_max IS NULL AND price_min <= %d))",
                                       params[:price], params[:price], max, min)
         ## 「～ 〇〇円」や「〇〇円 ～」を選択した場合
         else
@@ -157,11 +157,19 @@ class ProjectsController < ApplicationController
       end
       ## スキル
       if params[:skills]
-        ## 選択したスキルが1つの場合
-        if params[:skills].count == 1
-          jouken[1] = " AND must_skill_id = ? OR want_skill_id = ?"
-        elsif params[:skills].count >= 2
-          jouken[1] = " AND must_skill_id IN (?) OR want_skill_id IN (?)"
+        ## スキル以外に他に入力されている場合
+        if params[:price].present? or params[:engineer].present?
+          params[:skills].each do |skill|
+            jouken[1]  = jouken[1] + " AND (must_skill_id = " + skill + " OR want_skill_id = " + skill + ")"
+          end
+        ## スキルのみ入力されている場合
+        else
+          ## 選択したスキルが1つの場合
+          if params[:skills].count == 1
+            jouken[1] = " AND must_skill_id = ? OR want_skill_id = ?"
+          elsif params[:skills].count >= 2
+            jouken[1] = " AND must_skill_id IN (?) OR want_skill_id IN (?)"
+          end
         end
       end
       ## 参画エンジニア
@@ -175,6 +183,8 @@ class ProjectsController < ApplicationController
     else
       @engineers = User.engineer.pluck(:employee_number, :name)
       @skills = Skill.all
+      ## デフォルトの場合は案件の件数を取得
+      @count = Project.count
     end
   end
 

@@ -253,16 +253,28 @@ class UsersController < ApplicationController
       ## DBからは氏名(like検索)とスキル(IN検索)で絞る
       ## スキル
       if params[:skills]
-        ## 選択したスキルが1つの場合
-        if params[:skills].count == 1
-          jouken = "skill_id = ?"
-        elsif params[:skills].count >= 2
-          jouken = "skill_id IN (?)"
+        ## スキル以外に他に入力されている場合
+        if params[:name].present? or params[:age_from].present? or params[:age_to].present?
+          jouken = ""
+          params[:skills].each_with_index do |skill, index|
+            jouken = jouken + "skill_id = " + skill
+            if index < params[:skills].count - 1
+              jouken.concat(" AND ")
+            end
+          end
+        ## スキルのみ入力されている場合
+        else
+          ## 選択したスキルが1つの場合
+          if params[:skills].count == 1
+            jouken = "skill_id = ?"
+          elsif params[:skills].count >= 2
+            jouken = "skill_id IN (?)"
+          end
         end
         unless jouken.empty?
           ## 管理者はスキルがないため管理者フラグの判定は不要
           @users = User.joins("INNER JOIN possessed_skills ON users.employee_number = possessed_skills.employee_number")
-                        .where("name like ? AND " + jouken, "%"+params[:name]+"%", params[:skills]).distinct.paginate(page: params[:page])
+                        .where("name like ?", "%"+params[:name]+"%").where(jouken, params[:skills]).distinct.paginate(page: params[:page])
         end
       else
         @users = User.where("admin_flag <> true AND name like ?", "%"+params[:name]+"%").paginate(page: params[:page])
@@ -284,6 +296,8 @@ class UsersController < ApplicationController
       redirect_to users_path @@result
     else
       @skills = Skill.all
+      ## デフォルトの場合はエンジニアの件数を取得
+      @count = User.engineer.count
     end
   end
 
