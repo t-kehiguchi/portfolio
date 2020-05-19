@@ -249,6 +249,7 @@ class UsersController < ApplicationController
   end
 
   def search
+    invalidUrl()
     if request.post?
       ## DBからは氏名(like検索)とスキル(IN検索)で絞る
       ## スキル
