@@ -31,7 +31,7 @@
             (joinDay != '' && joinDay != null)
       ) {
         if(!isDate(joinYear+"/"+joinMonth+"/"+joinDay)){
-          alert("正しい日付にしてください");
+          alert("参画可能日は正しい日付にしてください");
           validationCheck = false;
         }
     } else if(
@@ -44,23 +44,34 @@
       validationCheck = false;
     }
     // パスワード
-    oneCheck($('#password').val(), "パスワード");
+    oneCheck($('#password').val(), "パスワード", true);
     // パスワード確認
-    oneCheck($('#passwordConfirmation').val(), "パスワード確認");
-    // パスワードとパスワード確認一致しているか
-    if($('#password').val() != $('#passwordConfirmation').val()) {
-      alert("パスワードは一致してください。");
-      validationCheck = false;
+    oneCheck($('#passwordConfirmation').val(), "パスワード確認", true);
+    // パスワードとパスワード確認一致しているか(ともに6文字以上入力が前提)
+    if($('#password').val() != '' && $('#password').val() != null
+        && $('#passwordConfirmation').val() != '' && $('#passwordConfirmation').val() != null
+          && $('#password').val().length >= 6 && $('#passwordConfirmation').val().length >= 6) {
+      if($('#password').val() != $('#passwordConfirmation').val()) {
+        alert("パスワードは一致してください。");
+        validationCheck = false;
+      }
     }
 
     return validationCheck;
 
     // 1個の項目に必須かチェック
-    function oneCheck(value, name) {
+    function oneCheck(value, name, password=false) {
 
       if(value == '' || value == null) {
         alert(name + "は必須項目です");
         validationCheck = false;
+      }
+      // パスワードチェック(6文字以上)
+      if(value != '' && value != null && password) {
+        if(value.length < 6) {
+          alert(name + "は6文字以上入力してください");
+          validationCheck = false;
+        }
       }
     }
 
@@ -83,7 +94,7 @@
       } else {
         if(dateFlag) {
           if(!isDate(value1+"/"+value2+"/"+value3)) {
-            alert("正しい日付にしてください");
+            alert(name + "は正しい日付にしてください");
             validationCheck = false;
           }
         }
