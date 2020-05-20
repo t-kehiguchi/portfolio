@@ -161,6 +161,8 @@ class UsersController < ApplicationController
   end
 
   def confirm
+    invalidUrl()
+    return if response_body ## 一般ユーザーのみ強制リダイレクト
     ## 登録画面か更新画面からの遷移ではない場合は
     unless request.referer or params[:name].present?
       flash[:danger] = '登録画面か更新画面から遷移してください。'
