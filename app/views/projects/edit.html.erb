@@ -357,19 +357,19 @@
       <td>
         <div>
           <%= f.collection_select :time_from_hour, getHourMap, :first, :last,
-            { include_blank: true, selected: getTwo(@project.start_time, 'first').to_i }, class: 'form-control', 
+            { include_blank: true, selected: getTwo(@project.start_time, 'first') }, class: 'form-control',
               :style=>"float:left; margin-bottom:0px; width:15%;" %>
             <p id="time"> ： </p>
           <%= f.collection_select :time_from_minites, getMinutesMap, :first, :last,
-            { include_blank: true, selected: getTwo(@project.start_time, 'second').to_i }, class: 'form-control', 
+            { include_blank: true, selected: getTwo(@project.start_time, 'second') }, class: 'form-control',
               :style=>"float:left; margin-bottom:0px; width:15%;" %>
             <p id="time"> ～ </p>
           <%= f.collection_select :time_to_hour, getHourMap, :first, :last,
-            { include_blank: true, selected: getTwo(@project.end_time, 'first').to_i }, class: 'form-control', 
+            { include_blank: true, selected: getTwo(@project.end_time, 'first') }, class: 'form-control',
               :style=>"float:left; margin-bottom:0px; width:15%;" %>
             <p id="time"> ： </p>
           <%= f.collection_select :time_to_minites, getMinutesMap, :first, :last,
-            { include_blank: true, selected: getTwo(@project.end_time, 'second').to_i }, class: 'form-control', 
+            { include_blank: true, selected: getTwo(@project.end_time, 'second') }, class: 'form-control',
               :style=>"float:left; margin-bottom:0px; width:15%;" %>
         </div>
       </td>

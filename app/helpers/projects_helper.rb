@@ -101,9 +101,9 @@ module ProjectsHelper
     if value.present?
       start = value.index(":")
       if number == 'first'
-        return value[0, start]
+        return value[0, start].to_i
       elsif number == 'second'
-        return value[start+1,value.length-start-1]
+        return value[start+1,value.length-start-1].to_i
       end
     end
   end
