@@ -19,12 +19,18 @@ module Api
             min = params[:price]["BETWEEN".length+1..params[:price].index("AND")-2]
             max = params[:price][params[:price].index("AND")+"AND".length+1..]
             jouken[0] = sprintf(" AND ((price_min IS NOT NULL AND price_max IS NOT NULL AND (price_min %s OR price_max %s))
-                                    OR (price_min IS NULL AND price_max IS NOT NULL AND price_max <= %d)
+                                    OR (price_min IS NULL AND price_max IS NOT NULL AND price_max >= %d)
                                       OR (price_min IS NOT NULL AND price_max IS NULL AND price_min <= %d))",
                                         params[:price], params[:price], max, min)
-          ## 「～ 〇〇円」や「〇〇円 ～」を選択した場合
           else
-            jouken[0] = " AND (price_min IS NOT NULL AND price_min #{params[:price]}) OR (price_max IS NOT NULL AND price_max #{params[:price]})"
+            value = params[:price][params[:price].index(" ")+1..]
+          end
+          ## 「～ 〇〇円」を選択した場合
+          if params[:price].include?("<=")
+            jouken[0] = " AND ((price_min IS NOT NULL AND price_min <= #{value}) OR (price_max IS NOT NULL AND price_max >= #{value}))"
+          ## 「〇〇円 ～」を選択した場合
+          elsif params[:price].include?(">=")
+            jouken[0] = " AND ((price_min IS NOT NULL AND price_min >= #{value}) OR (price_max IS NOT NULL AND price_max >= #{value}))"
           end
         end
         ## スキル
