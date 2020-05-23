@@ -18,7 +18,6 @@ gem 'roo'
 gem 'mysql2'
 
 group :development, :test do
-  gem 'mysql2', '~> 0.5.3'
   gem 'dotenv-rails'
   gem 'byebug', '9.0.6', platform: :mri
 end
