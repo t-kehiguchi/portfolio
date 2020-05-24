@@ -55,11 +55,9 @@ class ProjectsController < ApplicationController
         flag = false
       end
       ## 尚可スキル情報(あれば)
-      wantSkillHash = params["wantSkill"].map(&:to_i).filter {|wantSkill| wantSkill > 0}
-      if wantSkillHash.present?
-        unless skillReplace(wantSkillHash, params["project"]["project_id"], "want")
-          flag = false
-        end
+      wantSkillHash = params["wantSkill"] ? params["wantSkill"].map(&:to_i).filter {|wantSkill| wantSkill > 0} : []
+      unless skillReplace(wantSkillHash, params["project"]["project_id"], "want")
+        flag = false
       end
       if flag
         flash[:success] = '案件「' + @project.project_name + '」の情報更新しました。'
