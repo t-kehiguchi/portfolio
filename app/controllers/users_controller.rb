@@ -161,7 +161,10 @@ class UsersController < ApplicationController
   end
 
   def confirm
-    invalidUrl()
+    ## 自身の情報を更新は除く
+    unless current_user.employee_number.eql?(params[:employeeNumber].to_i)
+      invalidUrl()
+    end
     return if response_body ## 一般ユーザーのみ強制リダイレクト
     ## 登録画面か更新画面からの遷移ではない場合は
     unless request.referer or params[:name].present?
