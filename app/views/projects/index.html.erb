@@ -38,7 +38,7 @@
           <td><%= project.working_place %></td>
         </tr>
         <tr>
-          <th>スキル</th>
+          <th>必須スキル</th>
           <td colspan="3">
             <% @projectSkills.where("project_id = ?", project.project_id).each_with_index do |projectSkill, index| %>
               <% if (index == 0 and @projectSkills.where("project_id = ?", project.project_id).count == 1) or @projectSkills.where("project_id = ?", project.project_id).count == index+1 %>
