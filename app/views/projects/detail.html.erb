@@ -128,11 +128,11 @@
         <td id="tdMustSkill" style="text-align:left;">
           <% @projectSkills.each_with_index do |projectSkill, index| %>
             <% if (index == 0 and @projectSkills.count == 1) or @projectSkills.count == index+1 %>
-              <div class="btn btn-primary btn-sm">
+              <div class="btn btn-primary btn-sm" style="cursor:default;">
                 <%= getSkillName(projectSkill.must_skill_id) %>
               </div>
             <% else %>
-              <div class="btn btn-primary btn-sm" style="margin-right:10px;">
+              <div class="btn btn-primary btn-sm" style="margin-right:10px; cursor:default;">
                 <%= getSkillName(projectSkill.must_skill_id) %>
               </div>
             <% end %>
@@ -144,11 +144,11 @@
           <% if @projectWantSkills.present? %>
             <% @projectWantSkills.each_with_index do |projectWantSkill, index| %>
               <% if (index == 0 and @projectWantSkills.count == 1) or @projectWantSkills.count == index+1 %>
-                <div class="btn btn-primary btn-sm">
+                <div class="btn btn-primary btn-sm" style="cursor:default;">
                   <%= getSkillName(projectWantSkill.want_skill_id) %>
                 </div>
               <% else %>
-                <div class="btn btn-primary btn-sm" style="margin-right:10px;">
+                <div class="btn btn-primary btn-sm" style="margin-right:10px; cursor:default;">
                   <%= getSkillName(projectWantSkill.want_skill_id) %>
                 </div>
               <% end %>

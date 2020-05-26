@@ -42,11 +42,11 @@
           <td colspan="3">
             <% @projectSkills.where("project_id = ?", project.project_id).each_with_index do |projectSkill, index| %>
               <% if (index == 0 and @projectSkills.where("project_id = ?", project.project_id).count == 1) or @projectSkills.where("project_id = ?", project.project_id).count == index+1 %>
-                <div class="btn btn-primary">
+                <div class="btn btn-primary" style="cursor:default;">
                   <%= getSkillName(projectSkill.must_skill_id) %>
                 </div>
               <% else %>
-                <div class="btn btn-primary" style="margin-right:10px;">
+                <div class="btn btn-primary" style="margin-right:10px; cursor:default;">
                   <%= getSkillName(projectSkill.must_skill_id) %>
                 </div>
               <% end %>

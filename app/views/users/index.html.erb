@@ -42,7 +42,7 @@
           <td><%= user.nearest_station %></td>
           <td>
             <% if getMostExperientedSkillId(user.employee_number) %>
-              <div class="btn btn-primary">
+              <div class="btn btn-primary" style="cursor:default;">
                 <%= getSkillName(getMostExperientedSkillId(user.employee_number)) %>
               </div>
             <% else %>

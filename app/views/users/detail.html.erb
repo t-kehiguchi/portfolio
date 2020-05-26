@@ -100,7 +100,7 @@
           <td id="tdSkill" style="text-align:left;">
             <% unless @possessedSkills.empty? %>
               <% @possessedSkills.each do |possessedSkill| %>
-                <div class="btn btn-primary btn-sm">
+                <div class="btn btn-primary btn-sm" style="cursor:default;">
                   <input type="hidden" name="month" id="month" value=<%= getYearAndMonth(possessedSkill.month) %>>
                   <%= getSkillName(possessedSkill.skill_id) %>
                 </div>
