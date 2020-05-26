@@ -328,7 +328,7 @@ class ProjectsController < ApplicationController
         matchInfoHash[e.employee_number] = possessedSkill.present? ? (count*100/skills.count).to_f : 0.to_f
       end
       ## マッチング率の高い順に並べ替え(マッチング率が同一なら社員番号の昇順)
-      return matchInfoHash.sort_by{ | k, v | v }.reverse.sort.to_h
+      return matchInfoHash.sort.sort_by{ | k, v | v }.reverse.to_h
     end
 
 end
