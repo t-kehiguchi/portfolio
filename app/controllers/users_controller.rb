@@ -247,6 +247,13 @@ class UsersController < ApplicationController
         deleteFlag = false
       end
     end
+    ## 案件要員(ある場合)
+    @projectMember = ProjectMember.where(employee_number: params[:id])
+    if @projectMember
+      unless @projectMember.delete_all
+        deleteFlag = false
+      end
+    end
     if deleteFlag
       flash[:success] = @user.name + 'さんの情報を削除しました。'
       redirect_to users_url
