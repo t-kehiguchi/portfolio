@@ -224,12 +224,10 @@ class UsersController < ApplicationController
     invalidUrl()
     ## エンジニア検索画面から検索が返ってきた場合
     if params[:format].present?
-      @users = @@result
-      ## usersインスタンス変数に入れた後に初期化する
-      @@result = []
+      @users = @@result.page(params[:page])
     else
       ## エンジニア(一般ユーザー)のみ抽出
-      @users = getAllUser.engineer.paginate(page: params[:page])
+      @users = getAllUser.engineer.paginate(page: params[:page], per_page: 25)
     end
   end
 
@@ -287,10 +285,10 @@ class UsersController < ApplicationController
         unless jouken.empty?
           ## 管理者はスキルがないため管理者フラグの判定は不要
           @users = User.joins("INNER JOIN possessed_skills ON users.employee_number = possessed_skills.employee_number")
-                        .where("name like ?", "%"+params[:name]+"%").where(jouken, params[:skills]).distinct.paginate(page: params[:page])
+                        .where("name like ?", "%"+params[:name]+"%").where(jouken, params[:skills]).distinct.paginate(page: params[:page], per_page: 25)
         end
       else
-        @users = User.where("admin_flag <> true AND name like ?", "%"+params[:name]+"%").paginate(page: params[:page])
+        @users = User.where("admin_flag <> true AND name like ?", "%"+params[:name]+"%").paginate(page: params[:page], per_page: 25)
       end
       ## 年齢
       if params[:age_from].present? and params[:age_to].present?
@@ -302,7 +300,7 @@ class UsersController < ApplicationController
             count = count + 1
           end
         end
-        @@result = User.where(employee_number: @@result).paginate(page: params[:page])
+        @@result = User.where(employee_number: @@result).paginate(page: params[:page], per_page: 25)
       else
         @@result = @users
       end

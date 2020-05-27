@@ -13,16 +13,20 @@
 
 </script>
 
-<div>
+<div style="height:75px;">
   <h3>エンジニア一覧</h3>
   <%= link_to " ＋ エンジニア新規登録", users_new_path, class:"btn btn-primary", :style=>"float:left;" %>
   <%= link_to "エンジニア検索", users_search_path, class:"btn btn-primary", :style=>"float:right;" %>
 </div>
 
-<%= will_paginate %>
+<%= will_paginate :previous_label => ' &lt 前へ', :next_label => '次へ &gt' %>
 
 <% if @users.present? %>
-  <table class="table-bordered table-condensed" style="margin-top:75px;">
+  <% if @users.count <= 25 %>
+    <table class="table-bordered table-condensed" style="margin-top:50px;">
+  <% else %>
+    <table class="table-bordered table-condensed">
+  <% end %>
     <thead>
       <tr style="background-color:#ebebeb;">
         <th>氏名</th>
@@ -59,9 +63,9 @@
     </tbody>
   </table>
 <% else%>
-  <h1 style="margin-top:100px;">
+  <h1 style="margin-top:75px;">
     該当のエンジニアは存在しません。
   </h1>
 <% end %>
 
-<%= will_paginate %>
+<%= will_paginate :previous_label => ' &lt 前へ', :next_label => '次へ &gt' %>

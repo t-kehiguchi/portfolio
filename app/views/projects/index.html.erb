@@ -1,6 +1,6 @@
 <% provide(:title, '案件一覧') %>
 
-<div>
+<div style="height:75px;">
   <h3>案件一覧</h3>
   <% if current_user.admin_flag %>
     <%= link_to " ＋ 案件新規登録", projects_new_path, class:"btn btn-primary", :style=>"float:left;" %>
@@ -8,13 +8,13 @@
   <%= link_to "案件検索", projects_search_path, class:"btn btn-primary", :style=>"float:right;" %>
 </div>
 
-<%= will_paginate %>
+<%= will_paginate :previous_label => ' &lt 前へ', :next_label => '次へ &gt' %>
 
 <% if @projects.present? %>
   <% @projects.each_with_index do |project, index| %>
-    <% if index % 10 == 0 %>
+    <% if index % 10 == 0 and @projects.count > 10 %>
       <table id="project" class="table-bordered table-condensed"
-        style="margin-top:75px; width:90%; margin-left:auto; margin-right:auto; border-top:none; border-left:none; border-right:none;">
+        style="width:90%; margin-left:auto; margin-right:auto; border-top:none; border-left:none; border-right:none;">
     <% else %>
       <table id="project" class="table-bordered table-condensed"
         style="margin-top:30px; width:90%; margin-left:auto; margin-right:auto; border-top:none; border-left:none; border-right:none;">
@@ -61,9 +61,9 @@
     </table>
   <% end %>
 <% else%>
-  <h1 style="margin-top:100px;">
+  <h1 style="margin-top:50px;">
     該当の案件は存在しません。
   </h1>
 <% end %>
 
-<%= will_paginate %>
+<%= will_paginate :previous_label => ' &lt 前へ', :next_label => '次へ &gt' %>

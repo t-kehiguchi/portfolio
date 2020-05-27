@@ -32,6 +32,19 @@ User.create!(employee_number:       22222222,
              telephone_number:      "080-1307-4468",
              join_able_date:        "2020-04-01")
 
+# モルモット第二号以降
+for i in 1..50
+  User.create!(employee_number:       22222222+i,
+               password:              "password",
+               password_confirmation: "password",
+               name:                  "社員"+i.to_s,
+               department:            "研修生",
+               birthday:              "1988-05-08",
+               nearest_station:       "新宿駅",
+               telephone_number:      "090-1234-5678",
+               join_able_date:        "2020-04-01")
+end
+
 # スキルマスタ
 skill = ["Windows", "Linux", "Java", "PHP", "Ruby", "C言語", "C#", "Python",
          "SQL", "HTML", "HTML5", "CSS", "CSS3", "JavaScript", "jQuery",
@@ -84,8 +97,8 @@ def createProjectAndSkillsAndMember()
   wantSkill = []
   ## 1～30のスキルから抽出
   skillList = Skill.where("skill_id BETWEEN ? AND ?", 1, 30).pluck(:skill_id)
-  ## 0～5件
-  for i in 0..Random.new.rand(0..5)
+  ## 0～50件
+  for i in 0..Random.new.rand(0..50)
     Project.create!(project_id:    Date.today.strftime("%Y%m%d") + format("-%02d", i+1),
                     project_name:  "A",
                     content:       "B",

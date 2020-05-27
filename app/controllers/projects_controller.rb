@@ -128,11 +128,9 @@ class ProjectsController < ApplicationController
   def index
     ## 案件検索画面から検索が返ってきた場合
     if params[:format].present?
-      @projects = @@result
-      ## projectsインスタンス変数に入れた後に初期化する
-      @@result = []
+      @projects = @@result.page(params[:page])
     else
-      @projects = getAllProjects.paginate(page: params[:page])
+      @projects = getAllProjects.paginate(page: params[:page], per_page: 10)
     end
     @projectSkills = ProjectMustSkill.all.order(project_id: "DESC")
   end
@@ -185,7 +183,7 @@ class ProjectsController < ApplicationController
       end
       @@result = Project.joins(@@joinQuery)
                   .where("1 = 1" + jouken[0] + jouken[1] + jouken[2], params[:skills], params[:skills])
-                    .order(project_id: "DESC").distinct.paginate(page: params[:page])
+                    .order(project_id: "DESC").distinct.paginate(page: params[:page], per_page: 10)
       redirect_to projects_path @@result
     else
       @engineers = User.engineer.pluck(:employee_number, :name)
