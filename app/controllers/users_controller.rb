@@ -261,6 +261,8 @@ class UsersController < ApplicationController
   def search
     invalidUrl()
     if request.post?
+      ## resultクラス変数を初期化
+      @@result = []
       ## DBからは氏名(like検索)とスキル(IN検索)で絞る
       ## スキル
       if params[:skills]
