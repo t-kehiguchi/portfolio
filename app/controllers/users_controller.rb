@@ -224,7 +224,7 @@ class UsersController < ApplicationController
     invalidUrl()
     ## エンジニア検索画面から検索が返ってきた場合
     if params[:format].present?
-      @users = @@result.page(params[:page])
+      @users = @@result.paginate(page: params[:page], per_page: 25).page(params[:page])
     else
       ## エンジニア(一般ユーザー)のみ抽出
       @users = getAllUser.engineer.paginate(page: params[:page], per_page: 25)
@@ -266,8 +266,8 @@ class UsersController < ApplicationController
       ## DBからは氏名(like検索)とスキル(IN検索)で絞る
       ## スキル
       if params[:skills]
-        ## スキル以外に他に入力されている場合
-        if params[:name].present? or params[:age_from].present? or params[:age_to].present?
+        ## スキル以外に他に入力されている場合(年齢は両方入力か両方未入力)
+        if params[:name].present? or (params[:age_from].present? and params[:age_to].present?) or (params[:age_from].empty? and params[:age_to].empty?)
           jouken = ""
           params[:skills].each_with_index do |skill, index|
             jouken = jouken + "skill_id = " + skill
@@ -287,10 +287,10 @@ class UsersController < ApplicationController
         unless jouken.empty?
           ## 管理者はスキルがないため管理者フラグの判定は不要
           @users = User.joins("INNER JOIN possessed_skills ON users.employee_number = possessed_skills.employee_number")
-                        .where("name like ?", "%"+params[:name]+"%").where(jouken, params[:skills]).distinct.paginate(page: params[:page], per_page: 25)
+                        .where("name like ?", "%"+params[:name]+"%").where(jouken, params[:skills]).distinct
         end
       else
-        @users = User.where("admin_flag <> true AND name like ?", "%"+params[:name]+"%").paginate(page: params[:page], per_page: 25)
+        @users = User.where("admin_flag <> true AND name like ?", "%"+params[:name]+"%")
       end
       ## 年齢
       if params[:age_from].present? and params[:age_to].present?
@@ -302,7 +302,7 @@ class UsersController < ApplicationController
             count = count + 1
           end
         end
-        @@result = User.where(employee_number: @@result).paginate(page: params[:page], per_page: 25)
+        @@result = User.where(employee_number: @@result)
       else
         @@result = @users
       end
