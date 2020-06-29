@@ -199,12 +199,16 @@ class ProjectsController < ApplicationController
     mustSkills = ProjectMustSkill.where(project_id: params[:id]).pluck(:must_skill_id)
     wantSkills = ProjectWantSkill.where(project_id: params[:id]).pluck(:want_skill_id)
     skills = mustSkills.push(wantSkills).flatten!.uniq.sort ## 重複なし
-    ## マッチング情報取得(上位10件)
-    @matching = {}
+    ## マッチング情報取得(上位10件、未参画、参画可能タイミング)
+    @matching, @matchingNotJoin, @matchingJoinableTiming = {}, {}, {}
     skillMatchInfo(skills).each_with_index do |m, index|
-      if index < 10
-        @matching[m[0]] = m[1]
-      end
+      user = User.find(m[0])
+      ## 上位10件
+      @matching[m[0]] = m[1] if index < 10
+      ## 未参画
+      @matchingNotJoin[m[0]] = m[1] if @matchingNotJoin.count < 10 and isNotJoin(m[0])
+      ## 参画可能タイミング(案件開始日 ≦ 参画可能日)
+      @matchingJoinableTiming[m[0]] = m[1] if @matchingJoinableTiming.count < 10 and user.join_able_date.present? and compareDate(Project.find(params[:id]).start_date, user.join_able_date) >= 0
     end
   end
 
@@ -327,6 +331,11 @@ class ProjectsController < ApplicationController
       end
       ## マッチング率の高い順に並べ替え(マッチング率が同一なら社員番号の昇順)
       return (matchInfoHash.sort do |a, b| b[1] <=> a[1] || a[1] <=> b[1] end).to_h
+    end
+
+    ## 対象ユーザーが末参画か判定するメソッド
+    def isNotJoin(user)
+      return ProjectMember.where("employee_number = ? AND end_date is null", user).empty?
     end
 
 end

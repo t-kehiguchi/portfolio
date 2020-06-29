@@ -2,12 +2,38 @@
 
 <script>
 
+  // プルダウン表示
+  var pulldown = ['上位10ユーザー表示', '空きメンバーに絞る', '参画可能タイミングが合致メンバに絞る'];
+
+  // 起動時
+  $(document).ready(
+    function(){
+      addPulldownData($('#dispCondition'));
+    }
+  );
+
   // tableの行をhover
   $(function(){
     $("table tbody tr").hover(function() {
       $(this).css('background-color','#fafafa');
     }, function() {
       $(this).css('background-color','');
+    });
+  });
+
+  // 表示方法プルダウン
+  $(function(){
+    $('#dispCondition').change(function(){
+      if($(this).val() == pulldown[0]) {
+        displayCss('#top10', '');
+        displayCss('#notJoin, #joinableTiming', 'none');
+      } else if($(this).val() == pulldown[1]) {
+        displayCss('#notJoin', '');
+        displayCss('#top10, #joinableTiming', 'none');
+      } else if($(this).val() == pulldown[2]) {
+        displayCss('#joinableTiming', '');
+        displayCss('#top10, #notJoin', 'none');
+      }
     });
   });
 
@@ -27,10 +53,33 @@
     }
   );
 
+  // プルダウンの選択項目を作成するメソッド
+  function addPulldownData(element) {
+    for(let i = 0 ; i < pulldown.length ; i++) {
+      var option = document.createElement("option");
+      option.selected = (i == 0) ? true : false;
+      option.innerText = pulldown[i];
+      element.append(option);
+    }
+  }
+
+  // displayプロパティ共通メソッド
+  function displayCss(element, disp) {
+    for(let i = 0 ; i < $(element).length ; i++) {
+      $(element).css('display', disp);
+    }
+  }
+
 </script>
 
 <div>
   <h3>案件「<%= Project.find(params[:id]).project_name %>」の案件マッチング</h3>
+</div>
+<div>
+  <h3 style="margin-bottom:0px;">
+    案件開始日 : <%= Date.parse(Project.find(params[:id]).start_date).strftime("%Y年%-m月%-d日") %>
+    <select class="form-control" id="dispCondition" style="width:27.5%; float:right;"></select>
+  </h3>
 </div>
 
 <table class="table-bordered table-condensed" style="margin-top:50px;">
@@ -39,16 +88,20 @@
       <th>氏名</th>
       <th>所属</th>
       <th>最寄り駅</th>
+      <th style="width:150px;">参画可能日</th>
       <th>参画中</th>
       <th>マッチング率</th>
     </tr>
   </thead>
-  <tbody>
+  <tbody id="top10">
     <% @matching.keys.each_with_index do |m, index| %>
       <tr style="height:50px;">
         <td><%= link_to getUser(m).name, user_detail_path(m) %></td>
         <td><%= getUser(m).department %></td>
         <td><%= getUser(m).nearest_station %></td>
+        <td>
+          <%= join = getUser(m).join_able_date; join.present? ? Date.parse(join).strftime("%Y年%-m月%-d日〜") : "未定" %>
+        </td>
         <td>
           <% if ProjectMember.where("project_id = ? AND employee_number = ? AND end_date is null", params[:id], m).present? %>
             この案件に参画中
@@ -60,6 +113,54 @@
         </td>
         <td id="matchingRate">
           <progress max="100" id="rate" value="<%= @matching[m] %>" style="vertical-align: middle;"></progress>
+        </td>
+      </tr>
+    <% end %>
+  </tbody>
+  <tbody id="notJoin" style="display:none;">
+    <% @matchingNotJoin.keys.each_with_index do |m, index| %>
+      <tr style="height:50px;">
+        <td><%= link_to getUser(m).name, user_detail_path(m) %></td>
+        <td><%= getUser(m).department %></td>
+        <td><%= getUser(m).nearest_station %></td>
+        <td>
+          <%= join = getUser(m).join_able_date; join.present? ? Date.parse(join).strftime("%Y年%-m月%-d日〜") : "未定" %>
+        </td>
+        <td>
+          <% if ProjectMember.where("project_id = ? AND employee_number = ? AND end_date is null", params[:id], m).present? %>
+            この案件に参画中
+          <% elsif ProjectMember.where("project_id <> ? AND employee_number = ? AND end_date is null", params[:id], m).present? %>
+            <%= link_to '別の案件に参画中', project_detail_path(ProjectMember.where("project_id <> ? AND employee_number = ? AND end_date is null", params[:id], m).maximum(:project_id)) %>
+          <% else %>
+            未参画
+          <% end %>
+        </td>
+        <td id="matchingRate">
+          <progress max="100" id="rate" value="<%= @matchingNotJoin[m] %>" style="vertical-align: middle;"></progress>
+        </td>
+      </tr>
+    <% end %>
+  </tbody>
+  <tbody id="joinableTiming" style="display:none;">
+    <% @matchingJoinableTiming.keys.each_with_index do |m, index| %>
+      <tr style="height:50px;">
+        <td><%= link_to getUser(m).name, user_detail_path(m) %></td>
+        <td><%= getUser(m).department %></td>
+        <td><%= getUser(m).nearest_station %></td>
+        <td>
+          <%= join = getUser(m).join_able_date; join.present? ? Date.parse(join).strftime("%Y年%-m月%-d日〜") : "未定" %>
+        </td>
+        <td>
+          <% if ProjectMember.where("project_id = ? AND employee_number = ? AND end_date is null", params[:id], m).present? %>
+            この案件に参画中
+          <% elsif ProjectMember.where("project_id <> ? AND employee_number = ? AND end_date is null", params[:id], m).present? %>
+            <%= link_to '別の案件に参画中', project_detail_path(ProjectMember.where("project_id <> ? AND employee_number = ? AND end_date is null", params[:id], m).maximum(:project_id)) %>
+          <% else %>
+            未参画
+          <% end %>
+        </td>
+        <td id="matchingRate">
+          <progress max="100" id="rate" value="<%= @matchingJoinableTiming[m] %>" style="vertical-align: middle;"></progress>
         </td>
       </tr>
     <% end %>
