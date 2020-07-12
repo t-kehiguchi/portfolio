@@ -32,7 +32,7 @@
     // 「氏名」テキストボックスに変更を加えたら発動
     $('input[name="name"]').change(function() {
       var val = $(this).val();
-      getSelectCountWithApi(val, $('input[name="age_from"]').val(), $('input[name="age_to"]').val(), skills);
+      getSelectCountWithApi(val, $('input[name="age_from"]').val(), $('input[name="age_to"]').val(), skills, $('select[name="joinOrNot"]').val(), $('input[name="joinEndDate"]').val());
     });
 
     // 「年齢」テキストボックスに変更を加えたら発動
@@ -55,7 +55,7 @@
             ((hash['from'] == null || hash['from'] == '') && (hash['to'] == null || hash['to'] == ''))
               || ((hash['from'] != null && hash['from'] != '') && (hash['to'] != null && hash['to'] != ''))
         ) {
-          getSelectCountWithApi($('input[name="name"]').val(), hash['from'], hash['to'], skills);
+          getSelectCountWithApi($('input[name="name"]').val(), hash['from'], hash['to'], skills, $('select[name="joinOrNot"]').val(), $('input[name="joinEndDate"]').val());
         }
       }
     });
@@ -67,13 +67,25 @@
       $('input[name="skills[]"]:checked').each(function() {
         skills.push($(this).val());
       });
-      getSelectCountWithApi($('input[name="name"]').val(), $('input[name="age_from"]').val(), $('input[name="age_to"]').val(), skills);
+      getSelectCountWithApi($('input[name="name"]').val(), $('input[name="age_from"]').val(), $('input[name="age_to"]').val(), skills, $('select[name="joinOrNot"]').val(), $('input[name="joinEndDate"]').val());
+    });
+
+    // 「参画有無」プルダウンを選択したら発動
+    $('select[name="joinOrNot"]').change(function() {
+      var val = $(this).val();
+      getSelectCountWithApi($('input[name="name"]').val(), $('input[name="age_from"]').val(), $('input[name="age_to"]').val(), skills, val, $('input[name="joinEndDate"]').val());
+    });
+
+    // 「参画終了日」カレンダーで日付を選択したら発動
+    $('input[name="joinEndDate"]').change(function(){
+      var val = $(this).val();
+      getSelectCountWithApi($('input[name="name"]').val(), $('input[name="age_from"]').val(), $('input[name="age_to"]').val(), skills, $('select[name="joinOrNot"]').val(), val);
     });
 
   });
 
-  // 氏名、年齢、スキルの入力・選択時に該当する件数を取得するAPIを連携するメソッド
-  function getSelectCountWithApi(name, ageFrom, ageTo, skills) {
+  // 氏名、年齢、スキル、参画有無、参画終了日の入力・選択時に該当する件数を取得するAPIを連携するメソッド
+  function getSelectCountWithApi(name, ageFrom, ageTo, skills, joinOrNot, joinEndDate) {
     $.ajax({
       url: '/api/v1/users/search',
       type: 'POST',
@@ -81,7 +93,9 @@
         name: name,
         age_from: ageFrom,
         age_to: ageTo,
-        skills: skills
+        skills: skills,
+        joinOrNot: joinOrNot,
+        joinEndDate: joinEndDate
       },
       dataType: 'json'
     }).done(function(data){
@@ -119,6 +133,13 @@
       <% end %>
     </td>
   </table>
+
+  <%= f.label "参画有無" %>
+  <%= f.collection_select :joinOrNot, ["無","有"], :first, :last,
+    { include_blank: true, selected: "" }, class: 'form-control', :style=>"width:25%;" %>
+
+  <%= f.label "参画終了予定日" %>
+  <%= f.date_field :joinEndDate, class: 'form-control', :style=>"width:25%;" %>
 
   <div style="margin-top:50px;">
     <p id="count" style="float:left; font-weight:700; font-size:25px; color:#f0ad4e;"><%= @count %></p>

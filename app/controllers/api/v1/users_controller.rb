@@ -2,10 +2,29 @@ module Api
   module V1
     class UsersController < ApplicationController
 
+      ## JOIN句(定数)
+      JOIN_PHASE = ["INNER JOIN possessed_skills ON users.employee_number = possessed_skills.employee_number",
+                    "LEFT OUTER JOIN project_members ON users.employee_number = project_members.employee_number",
+                    "INNER JOIN project_members ON users.employee_number = project_members.employee_number"]
+      ## 参画有無(定数)
+      JOIN_OR_NOT = ["無", "有"]
+
       def search
         ## 検索結果
         result = []
-        ## DBからは氏名(like検索)とスキル(IN検索)で絞る
+        ## DBからは氏名(like検索)とスキル(IN検索)と参画有無(結合)で絞る
+        ## 参画有無
+        if params[:joinOrNot]
+          ## 参画無
+          if params[:joinOrNot] == JOIN_OR_NOT[0]
+            joins = JOIN_PHASE[1]
+            joinsJouken = "start_date is null AND end_date is null"
+          ## 参画有
+          elsif params[:joinOrNot] == JOIN_OR_NOT[1]
+            joins = JOIN_PHASE[2]
+            joinsJouken = "start_date is not null AND end_date is null"
+          end
+        end
         ## スキル
         if params[:skills]
           ## スキル以外に他に入力されている場合(年齢は両方入力か両方未入力)
@@ -14,7 +33,7 @@ module Api
             params[:skills].each_with_index do |skill, index|
               jouken = jouken + "skill_id = " + skill
               if index < params[:skills].count - 1
-                jouken.concat(" AND ")
+                jouken.concat(" OR ")
               end
             end
           ## スキルのみ入力されている場合
@@ -28,13 +47,21 @@ module Api
           end
           unless jouken.empty?
             ## 管理者はスキルがないため管理者フラグの判定は不要
-            @users = User.joins("INNER JOIN possessed_skills ON users.employee_number = possessed_skills.employee_number")
-                          .where("name like ?", "%"+params[:name]+"%")
-                            .where(jouken, params[:skills]).distinct
+            @users = params[:joinOrNot].empty? ?
+                      User.joins(JOIN_PHASE[0]).where("name like ?", "%"+params[:name]+"%").where(jouken, params[:skills]).distinct :
+                       User.joins(JOIN_PHASE[0]).joins(joins).where("name like ?", "%"+params[:name]+"%").where(jouken, params[:skills]).where(joinsJouken).distinct
           end
         else
-          @users = User.where("admin_flag <> true AND name like ?", "%"+params[:name]+"%")
+          @users = params[:joinOrNot].empty? ?
+                    User.where("admin_flag <> true AND name like ?", "%"+params[:name]+"%") :
+                     User.joins(joins).where("admin_flag <> true AND name like ?", "%"+params[:name]+"%").where(joinsJouken).distinct
         end
+        ## 参画終了日(入力日付の1か月前 ≦ 参画終了日 ≦ 入力日付の1か月後)
+        @users = User.joins(JOIN_PHASE[2])
+                      .where("users.employee_number in (?) AND end_date BETWEEN ? AND ?",
+                        @users.pluck(:employee_number),
+                        (Date.parse(params[:joinEndDate]) << 1).strftime("%Y-%m-%d"),
+                        (Date.parse(params[:joinEndDate]) >> 1).strftime("%Y-%m-%d")) if params[:joinEndDate].present? and @users.pluck(:employee_number).present?
         ## 年齢
         if params[:age_from].present? and params[:age_to].present?
           count = 0
