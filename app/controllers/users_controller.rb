@@ -279,7 +279,8 @@ class UsersController < ApplicationController
         ## 参画有
         elsif params[:joinOrNot] == JOIN_OR_NOT[1]
           joins = JOIN_PHASE[2]
-          joinsJouken = "start_date is not null AND end_date is null"
+          now = Date.today.strftime("%Y-%m-%d")
+          joinsJouken = "(start_date is not null AND end_date is null) OR (#{now} <= end_date)"
         end
       end
       ## スキル
@@ -306,19 +307,19 @@ class UsersController < ApplicationController
           ## 管理者はスキルがないため管理者フラグの判定は不要
           @users = params[:joinOrNot].empty? ?
                     User.joins(JOIN_PHASE[0]).where("name like ?", "%"+params[:name]+"%").where(jouken, params[:skills]).distinct :
-                     User.joins(JOIN_PHASE[0]).joins(joins).where("name like ?", "%"+params[:name]+"%").where(jouken, params[:skills]).where(joinsJouken).distinct
+                     User.joins(JOIN_PHASE[0]).joins(joins).where("name like ?", "%"+params[:name]+"%").where(jouken, params[:skills]).where(joinsJouken).distinct.order(:employee_number)
         end
       else
         @users = params[:joinOrNot].empty? ?
                   User.where("admin_flag <> true AND name like ?", "%"+params[:name]+"%") :
-                   User.joins(joins).where("admin_flag <> true AND name like ?", "%"+params[:name]+"%").where(joinsJouken).distinct
+                   User.joins(joins).where("admin_flag <> true AND name like ?", "%"+params[:name]+"%").where(joinsJouken).distinct.order(:employee_number)
       end
       ## 参画終了日(入力日付の1か月前 ≦ 参画終了日 ≦ 入力日付の1か月後)
       @users = User.joins(JOIN_PHASE[2])
                     .where("users.employee_number in (?) AND end_date BETWEEN ? AND ?",
                       @users.pluck(:employee_number),
                       (Date.parse(params[:joinEndDate]) << 1).strftime("%Y-%m-%d"),
-                      (Date.parse(params[:joinEndDate]) >> 1).strftime("%Y-%m-%d")) if params[:joinEndDate].present? and @users.pluck(:employee_number).present?
+                      (Date.parse(params[:joinEndDate]) >> 1).strftime("%Y-%m-%d")).order(:employee_number) if params[:joinEndDate].present? and @users.pluck(:employee_number).present?
       ## 年齢
       if params[:age_from].present? and params[:age_to].present?
         count = 0

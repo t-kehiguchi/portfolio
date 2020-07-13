@@ -335,7 +335,7 @@ class ProjectsController < ApplicationController
 
     ## 対象ユーザーが末参画か判定するメソッド
     def isNotJoin(user)
-      return ProjectMember.where("employee_number = ? AND end_date is null", user).empty?
+      return ProjectMember.where("employee_number = ? AND (end_date is null OR #{Date.today.strftime("%Y-%m-%d")} <= end_date)", user).empty?
     end
 
 end

@@ -106,8 +106,8 @@
         <td>
           <% if ProjectMember.where("project_id = ? AND employee_number = ? AND end_date is null", params[:id], m).present? %>
             この案件に参画中
-          <% elsif ProjectMember.where("project_id <> ? AND employee_number = ? AND end_date is null", params[:id], m).present? %>
-            <%= link_to '別の案件に参画中', project_detail_path(ProjectMember.where("project_id <> ? AND employee_number = ? AND end_date is null", params[:id], m).maximum(:project_id)) %>
+          <% elsif ProjectMember.where("project_id <> ? AND employee_number = ? AND (end_date is null OR #{Date.today.strftime("%Y-%m-%d")} <= end_date)", params[:id], m).present? %>
+            <%= link_to '別の案件に参画中', project_detail_path(ProjectMember.where("project_id <> ? AND employee_number = ? AND (end_date is null OR #{Date.today.strftime("%Y-%m-%d")} <= end_date)", params[:id], m).maximum(:project_id)) %>
           <% else %>
             未参画
           <% end %>
@@ -130,8 +130,8 @@
         <td>
           <% if ProjectMember.where("project_id = ? AND employee_number = ? AND end_date is null", params[:id], m).present? %>
             この案件に参画中
-          <% elsif ProjectMember.where("project_id <> ? AND employee_number = ? AND end_date is null", params[:id], m).present? %>
-            <%= link_to '別の案件に参画中', project_detail_path(ProjectMember.where("project_id <> ? AND employee_number = ? AND end_date is null", params[:id], m).maximum(:project_id)) %>
+          <% elsif ProjectMember.where("project_id <> ? AND employee_number = ? AND (end_date is null OR #{Date.today.strftime("%Y-%m-%d")} <= end_date)", params[:id], m).present? %>
+            <%= link_to '別の案件に参画中', project_detail_path(ProjectMember.where("project_id <> ? AND employee_number = ? AND (end_date is null OR #{Date.today.strftime("%Y-%m-%d")} <= end_date)", params[:id], m).maximum(:project_id)) %>
           <% else %>
             未参画
           <% end %>
@@ -154,8 +154,8 @@
         <td>
           <% if ProjectMember.where("project_id = ? AND employee_number = ? AND end_date is null", params[:id], m).present? %>
             この案件に参画中
-          <% elsif ProjectMember.where("project_id <> ? AND employee_number = ? AND end_date is null", params[:id], m).present? %>
-            <%= link_to '別の案件に参画中', project_detail_path(ProjectMember.where("project_id <> ? AND employee_number = ? AND end_date is null", params[:id], m).maximum(:project_id)) %>
+          <% elsif ProjectMember.where("project_id <> ? AND employee_number = ? AND (end_date is null OR #{Date.today.strftime("%Y-%m-%d")} <= end_date)", params[:id], m).present? %>
+            <%= link_to '別の案件に参画中', project_detail_path(ProjectMember.where("project_id <> ? AND employee_number = ? AND (end_date is null OR #{Date.today.strftime("%Y-%m-%d")} <= end_date)", params[:id], m).maximum(:project_id)) %>
           <% else %>
             未参画
           <% end %>
