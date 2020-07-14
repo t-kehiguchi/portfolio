@@ -223,7 +223,7 @@ class UsersController < ApplicationController
     invalidUrl(@user)
     @possessedSkills = PossessedSkill.where(employee_number: params[:id]).order(month: "DESC")
     ## 参画しているか(終了日がnil)
-    @join = ProjectMember.where("employee_number = ? AND end_date is null", params[:id]).order(start_date: "DESC").first
+    @join = ProjectMember.where("employee_number = ? AND (end_date is null OR #{Date.today.strftime("%Y-%m-%d")} <= end_date)", params[:id]).order(start_date: "DESC").first
   end
 
   def index
