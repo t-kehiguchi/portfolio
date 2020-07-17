@@ -6,6 +6,8 @@ module Api
       @@joinQuery = "LEFT OUTER JOIN project_members m ON projects.project_id = m.project_id
                       LEFT OUTER JOIN project_must_skills ms ON projects.project_id = ms.project_id
                         LEFT OUTER JOIN project_want_skills ws ON projects.project_id = ws.project_id"
+      ## 参画有無(定数)
+      JOIN_OR_NOT = ["無", "有"]
 
       def search
         ## 検索結果
@@ -50,13 +52,26 @@ module Api
             end
           end
         end
+        ## 参画有無
+        if params[:joinOrNot]
+          ## 参画無
+          if params[:joinOrNot] == JOIN_OR_NOT[0]
+            joinsJouken = "m.start_date is null AND m.end_date is null"
+          ## 参画有
+          elsif params[:joinOrNot] == JOIN_OR_NOT[1]
+            now = Date.today.strftime("%Y-%m-%d")
+            joinsJouken = "(m.start_date is not null AND m.end_date is null) OR (#{now} <= m.end_date)"
+          end
+        end
         ## 参画エンジニア
         if params[:engineer].present?
           jouken[2] = " AND m.employee_number = " + params[:engineer]
         end
         result = Project.joins(@@joinQuery)
                   .where("1 = 1" + jouken[0] + jouken[1] + jouken[2], params[:skills], params[:skills])
-                    .order(project_id: "DESC").distinct
+                    .where("working_place like ?", "%"+params[:work_place]+"%")
+                      .where(joinsJouken)
+                        .order(project_id: "DESC").distinct
         render json: result.count
       end
 

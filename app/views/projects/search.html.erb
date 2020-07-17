@@ -10,7 +10,13 @@
     // 「単価」プルダウンに変更を加えたら発動
     $('select[name="price"]').change(function() {
       var val = $(this).val();
-      getSelectCountWithApi(val, skills, $('select[name="engineer"]').val());
+      getSelectCountWithApi(val, $('input[name="work_place"]').val(), skills, $('select[name="joinOrNot"]').val(), $('select[name="engineer"]').val());
+    });
+
+    // 「作業場所」テキストボックスに変更を加えたら発動
+    $('input[name="work_place"]').change(function() {
+      var val = $(this).val();
+      getSelectCountWithApi($('select[name="price"]').val(), val, skills, $('select[name="joinOrNot"]').val(), $('select[name="engineer"]').val());
     });
 
     // 「スキル」チェックボックスをチェックしたら発動
@@ -20,25 +26,33 @@
       $('input[name="skills[]"]:checked').each(function() {
         skills.push($(this).val());
       });
-      getSelectCountWithApi($('select[name="price"]').val(), skills, $('select[name="engineer"]').val());
+      getSelectCountWithApi($('select[name="price"]').val(), $('input[name="work_place"]').val(), skills, $('select[name="joinOrNot"]').val(), $('select[name="engineer"]').val());
+    });
+
+    // 「参画有無」プルダウンを選択したら発動
+    $('select[name="joinOrNot"]').change(function() {
+      var val = $(this).val();
+      getSelectCountWithApi($('select[name="price"]').val(), $('input[name="work_place"]').val(), skills, val, $('select[name="engineer"]').val());
     });
 
     // 「エンジニア」プルダウンに変更を加えたら発動
     $('select[name="engineer"]').change(function() {
       var val = $(this).val();
-      getSelectCountWithApi($('select[name="price"]').val(), skills, val);
+      getSelectCountWithApi($('select[name="price"]').val(), $('input[name="work_place"]').val(), skills, $('select[name="joinOrNot"]').val(), val);
     });
 
   });
 
-  // 単価、スキル、エンジニアの入力・選択時に該当する件数を取得するAPIを連携するメソッド
-  function getSelectCountWithApi(price, skills, engineer) {
+  // 単価、作業場所、スキル、参画有無、エンジニアの入力・選択時に該当する件数を取得するAPIを連携するメソッド
+  function getSelectCountWithApi(price, work_place, skills, joinOrNot, engineer) {
     $.ajax({
       url: '/api/v1/projects/search',
       type: 'POST',
       data: {
         price: price,
+        work_place: work_place,
         skills: skills,
+        joinOrNot: joinOrNot,
         engineer: engineer
       },
       dataType: 'json'
@@ -56,6 +70,9 @@
   <%= f.label "単価" %>
   <%= f.collection_select :price, getPriceDsp, :first, :last, { include_blank: true, selected: "" }, class: 'form-control', :style=>"width:60%;" %>
 
+  <%= f.label "作業場所" %>
+  <%= f.text_field :work_place, class: 'form-control', :style=>"width:60%;" %>
+
   <table class="skill" style="margin-top:25px; margin-bottom:25px;">
     <th style="width:150px;"><%= f.label "スキル" %></th>
     <td style="font-weight:700; text-align:left;">
@@ -69,6 +86,10 @@
       <% end %>
     </td>
   </table>
+
+  <%= f.label "参画有無" %>
+  <%= f.collection_select :joinOrNot, ["無","有"], :first, :last,
+    { include_blank: true, selected: "" }, class: 'form-control', :style=>"width:25%;" %>
 
   <%= f.label "エンジニア" %>
   <%= f.collection_select :engineer, @engineers, :first, :last, { include_blank: true, selected: "" }, class: 'form-control', :style=>"width:60%;" %>
