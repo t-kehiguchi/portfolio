@@ -53,6 +53,11 @@
         <tr>
           <th>参画可能日</th>
         </tr>
+        <% if @join.present? %>
+          <tr>
+            <th>参画終了予定日</th>
+          </tr>
+        <% end %>
         <tr>
           <th id="thSkill">保持スキル</th>
         </tr>
@@ -92,10 +97,17 @@
                 未定
               <% end %>
             <% else %>
-            案件参画中
+            <%= link_to '案件参画中', project_detail_path(@join.project_id) %>
             <% end %>
           </td>
         </tr>
+        <% if @join.present? %>
+          <tr>
+            <td style="text-align:left;">
+              <%= endDate = @join.end_date; endDate.present? ? '～ ' + endDate.to_date.strftime('%Y年%-m月%-d日') : '未定' %>
+            </td>
+          </tr>
+        <% end %>
         <tr>
           <td id="tdSkill" style="text-align:left;">
             <% unless @possessedSkills.empty? %>
