@@ -16,6 +16,9 @@
     $('#thMustSkill').height($('#tdMustSkill').height());
     $('#thWantSkill').height($('#tdWantSkill').height());
 
+    // 参画メンバーの高さ調整
+    $('#thjoinMember').height($('#tdJoinMember').height());
+
   });
 
 </script>
@@ -66,7 +69,7 @@
         <th id="thWantSkill">尚可スキル</th>
       </tr>
       <tr>
-        <th>参画メンバー</th>
+        <th id="thjoinMember">参画メンバー</th>
       </tr>
       <tr>
         <th id="thDescription">備考</th>
@@ -159,11 +162,11 @@
         </td>
       </tr>
       <tr>
-        <td style="text-align:left;">
+        <td id="tdJoinMember" style="text-align:left;">
           <% if @projectMembers.present? %>
             <% @projectMembers.each_with_index do |projectMember, index| %>
               <%= link_to getUser(projectMember.employee_number).name, user_detail_path(projectMember.employee_number) %>
-              <% if @projectMembers.count == index+1 %>
+              <% cnt = @projectMembers.count; if cnt > 1 and index+1 < cnt %>
                 <br>
               <% end %>
             <% end %>

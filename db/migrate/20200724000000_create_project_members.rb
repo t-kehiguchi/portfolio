@@ -1,8 +1,8 @@
 class CreateProjectMembers < ActiveRecord::Migration[5.1]
   def change
-    create_table :project_members, id: false do |t|
-      t.column :project_id, 'varchar(255) PRIMARY KEY NOT NULL'
-      t.integer :employee_number, null: false
+    create_table :project_members, primary_key: %w(project_id employee_number) do |t|
+      t.string :project_id
+      t.integer :employee_number
       t.string :start_date, null: false
       t.string :end_date, default: nil
       t.timestamps
