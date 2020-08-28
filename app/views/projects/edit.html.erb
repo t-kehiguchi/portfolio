@@ -74,6 +74,39 @@
       alert("必須スキルは必ず選択してください");
       validationCheck = false;
     }
+    // 参画メンバー
+    var table = $('#joinAbleFlame .new:visible');
+    var hash = {};// 格納用ハッシュ
+    for(let i = 0 ; i < table.length ; i++) {
+      var selectValue = $(table[i]).find('select').val();
+      var inputValue = $(table[i]).find('input').val();
+      // 参画メンバーと参画開始予定日のどちらかしか入力されてない場合
+      if(selectValue && !inputValue) {
+        var name = $(table[i]).find('option[value='+selectValue+']').text();
+        alert(name + 'さんの参画開始予定日を選択してください');
+        validationCheck = false;
+        break;
+      } else if(!selectValue && inputValue) {
+        alert(($('table#withMember').length+i+1) + '行目の参画メンバーを選択してください');
+        validationCheck = false;
+        break;
+      }
+      // hashに参画メンバーと参画開始予定日を追加(両方入力ある場合)
+      if(selectValue && inputValue) hash[selectValue] = inputValue;
+    }
+
+    // バリデーション成功時に上記追加されたhash内からhiddenパラメータに設定
+    if(validationCheck) {
+      for(var h in hash) {
+        $('#joinAbleFlame').append('<input type="hidden" name="joinAble[' + h + ']" value="' + hash[h] + '">');
+      }
+      // 既存の参画メンバーが存在する場合
+      for(var i = 0; i < $('table#withMember').length; i++) {
+        var id = $('table#withMember').eq(i).find('input[name="alreadyId"]').val();
+        var date = $('table#withMember').eq(i).find('input[name="alreadyDate"]').val();
+        $('#joinAbleFlame').append('<input type="hidden" name="joinAbleAlready[' + id + ']" value="' + date + '">');
+      }
+    }
 
     return validationCheck;
 
@@ -166,6 +199,14 @@
 
     function(){
 
+      var copy = $('table.new').clone(true); // コピー用
+      var selectEmployeeNumber = []; // 選択した参画メンバーリスト
+      var backup = $('#joinAbleFlame table.new').clone(true); // 復元用
+      // 参画メンバー枠がない(既存の参画メンバーがいない場合)
+      if($('#joinAbleFlame table#withMember').length == 0) $('table.new').css('display','');
+      // 起動時に既存の参画メンバーが1人しかいない場合は削除ボタンを非活性にする
+      if($('table#withMember').length == 1) $('table#withMember div#del').attr('disabled', true);
+
       // スキルボタン(追加ボタン以外)押下 → そのスキル削除
       $(document).on('click','#mustSkill .btn:not(#addMust), #wantSkill .btn:not(#addWant)',
         function() {
@@ -203,9 +244,134 @@
           // 尚可ボタン押下
           } else if($(this).text() == '尚可スキル追加') {
             $('td#want #select').css('display','block');
-            }
+          }
         }
       );
+
+　    // 参画メンバー追加ボタン
+      $(function(){
+        $("#joinAbleButton").on("click", function() {
+          $(this).next().slideToggle();
+        });
+      });
+
+      // 参画メンバー枠追加ボタン
+      $(function(){
+        $("#add").on("click", function() {
+          // 先に非活性解除
+          $('#joinAbleFlame table div#del').attr('disabled', false);
+          // デフォルト行をコピー
+          copyClone = copy.clone();
+          // デフォルトで「display:none;」が付与されているので解除
+          copyClone.css('display', '');
+          $(copyClone).find('#del').attr('disabled', false);
+          $(this).parent().append(copyClone);
+        });
+      });
+
+      // 参画メンバープルダウンが選択された場合(追加されたプルダウンも適用)
+      $(document).on('change','#joinAbleEngineer',function(){
+        // 表示されているプルダウンの差し替え処理
+        replacePulldown(backup, $('table.new:visible'), copy, selectEmployeeNumber);
+        // 差し替え後に選択した値をリストに格納
+        selectEmployeeNumber.push($(this).val());
+      });
+
+      // 削除ボタン
+      $(document).on('click','div#del',function(){
+        // 非活性の削除ボタンは削除できない
+        if(!$('div#del').attr('disabled')) {
+          $(this).parent().parent().parent().parent().remove();
+          // 枠が1個以下の場合は削除ボタンを押せないようにする(非活性)
+          if($('#joinAbleFlame table:visible').length <= 1) {
+            $('#joinAbleFlame table div#del').attr('disabled', true);
+          }
+        }
+      });
+
+      function replacePulldown(pulldown, table, copy, list) {
+        var selectedList = getAllValue(table); // 現在選択されている値のリスト
+        var diff = [];
+        diff[0] = selectedList.filter(i => list.indexOf(i) == -1) // selectedList - list
+        diff[1] = list.filter(i => selectedList.indexOf(i) == -1); // list - selectedList
+        for(let i = 0; i < table.length; i++) {
+          var selected = table.eq(i).find('option:selected').val(); // 現在選択している値
+          // 選択肢を全て取得
+          var pulldownList = $.map(table.eq(i).find('option'),
+            function(option) {
+              return option.value;
+            }
+          );
+          // 削除
+          $.each(diff[0],
+            function(index, val) {
+              // 選択されている値以外の選択肢を削除
+              if(selected != val) table.eq(i).find('option[value='+val+']').remove();
+              copy.find('option[value='+val+']').remove();
+            }
+          );
+          // 復活
+          $.each(diff[1],
+            function(index, val) {
+              // 同じプルダウンで選択肢を変えた場合は、変更前の選択肢を削除
+              if(pulldownList.includes(val)) table.eq(i).find('option[value='+val+']').remove();
+              var add = table.eq(i).find('#joinAbleEngineer');
+              var addIndex = getIndexSelectedValue(add, getNextValue(add,val));
+              if(addIndex == 0) { // 末尾
+                add.append($("<option></option>").val(val).text(getNameFromPulldown(pulldown, val)));
+              } else {
+                add.find('option').eq(addIndex).before($('<option>').html(getNameFromPulldown(pulldown, val)).val(val));
+              }
+              // 追加用も復元
+              if(!copy.find('option[value='+val+']').length) {
+                var copyIndex = getIndexSelectedValue(copy, getNextValue(add,val));
+                if(copyIndex == 0) { // 末尾
+                  copy.find('#joinAbleEngineer').append($("<option></option>").val(val).text(getNameFromPulldown(pulldown, val)));
+                } else {
+                  copy.find('option').eq(copyIndex).before($('<option>').html(getNameFromPulldown(pulldown, val)).val(val));
+                }
+              }
+            }
+          );
+        }
+      }
+
+      // 各プルダウンにて選択されている値を全て取得するメソッド
+      function getAllValue(table) {
+        var selected = [];
+        table.each(
+          function(index, element) {
+            val = $(element).find('option:selected').val();
+            if(val) selected.push(val);
+          }
+        );
+        return selected;
+      }
+
+      // 指定された値の次の値を取得
+      function getNextValue(pulldown, value) {
+        return $.map(pulldown.find('option'),
+          function(option) {
+            if(option.value > value) return option.value;
+          }
+        )[0];
+      }
+
+      // 選択されている値が何番目のoptionか取得するメソッド
+      function getIndexSelectedValue(pulldown, value) {
+        var count = 0; // 空白
+        pulldown.find('option').each(
+          function(index, element) {
+            if($(element).val() == value) count = index;
+          }
+        );
+        return count;
+      }
+
+      // デフォルトのプルダウンから名前を取得するメソッド
+      function getNameFromPulldown(pulldown, employeeNumber) {
+        return pulldown.find('option[value='+employeeNumber+']').text();
+      }
 
     }
   );
@@ -428,6 +594,57 @@
           <%= f.collection_select :skill, @skills, :first, :last,
             { include_blank: true }, class: 'form-control', :id=>"wantSelect",
               :style=>"float:left; margin-top:15px; width:50%;" %>
+        </div>
+      </td>
+    </tr>
+    <tr>
+      <th>参画メンバー</th>
+      <td id="joinAble">
+        <div id="joinAbleButton" class="btn btn-primary" style="width:100%;">参画メンバー入力</div>
+        <div id="joinAbleFlame" style="display:none;">
+          <div id="add" class="btn btn-danger" style="float:left; margin:10px 0px;">参画メンバー枠追加</div>
+          <% if @joinEngineer.present? %>
+            <% @joinEngineer.each do |je| %>
+              <table id="withMember" style="margin-top:10px;">
+                <tr>
+                  <th width="150px" style="text-align:left;">参画メンバー</th>
+                  <td id="name" style="text-align:left; font-weight:700;">
+                    <%= getUser(je.employee_number).name %>
+                    <input type="hidden" name="alreadyId" value="<%= je.employee_number %>">
+                  </td>
+                </tr>
+                <tr>
+                  <th width="150px" style="text-align:left;">参画開始日</th>
+                  <td id="date" width="345px" style="text-align:left; font-weight:700; font-size:14px;">
+                    <%= Date.parse(je.start_date).strftime("%Y年%-m月%-d日") %>
+                    <input type="hidden" name="alreadyDate" value="<%= je.start_date %>">
+                  </td>
+                  <td>
+                    <div id="del" class="btn btn-danger" style="float:left; margin:10px 0px;">削除</div>
+                  </td>
+                </tr>
+              </table>
+            <% end %>
+          <% end %>
+          <table class="new" style="margin-top:10px; display:none;">
+            <tr id="row">
+              <th width="150px" style="text-align:left;">参画メンバー</th>
+              <td style="text-align:left;">
+                <%= f.collection_select "joinAbleEngineer", @joinAbleEngineer, :first, :last,
+                  { include_blank: true }, class: 'form-control', :id=>"joinAbleEngineer",
+                    :style=>"margin-bottom:0px; width:85%;" %>
+              </td>
+            </tr>
+            <tr>
+              <th width="150px" style="text-align:left;">参画開始日</th>
+              <td style="text-align:left;">
+                <%= f.date_field "", class: 'form-control', :style=>"width:85%;" %>
+              </td>
+              <td>
+                <div id="del" class="btn btn-danger" disabled=true style="float:left; margin:10px 0px;">削除</div>
+              </td>
+            </tr>
+          </table>
         </div>
       </td>
     </tr>

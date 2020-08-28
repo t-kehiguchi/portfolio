@@ -61,6 +61,11 @@ class ProjectsController < ApplicationController
       unless skillReplace(wantSkillHash, params["project"]["project_id"], "want")
         flag = false
       end
+      ## 参画メンバー(既存メンバーを全て削除するだけのパターン(パラメータ自体来ない)もある)
+      params["joinAbleMember"] = params["joinAbleMember"] ? params["joinAbleMember"] : {}
+      unless projectMembersReplace(params["project"]["project_id"], params["joinAbleMember"])
+        flag = false
+      end
       if flag
         flash[:success] = '案件「' + @project.project_name + '」の情報更新しました。'
         redirect_to projects_url
@@ -70,6 +75,9 @@ class ProjectsController < ApplicationController
       @must = ProjectMustSkill.where(project_id: params[:id]) ## 必須スキル
       @want = ProjectWantSkill.where(project_id: params[:id]) ## 尚可スキル
       @skills = Skill.all.pluck(:skill_id, :skill_name)
+      @joinEngineer = ProjectMember.where(project_id: params[:id]) ## 参画メンバー
+      ## 参画可能メンバー(どの案件にも参画していないエンジニア)
+      @joinAbleEngineer = User.engineer.where("employee_number not in (?)", ProjectMember.pluck(:employee_number)).pluck(:employee_number, :name)
     end
   end
 
@@ -117,6 +125,12 @@ class ProjectsController < ApplicationController
       ## スキル(重複している可能性がある、尚可スキルは選択されていない場合はある)
       @must = params[:mustSkill].uniq
       @want = params[:wantSkill] ? params[:wantSkill].uniq : nil
+      ## 参画メンバー(新規参画メンバーと既存参画メンバーの両方がある場合はHashのマージ)
+      joinAble = params[:joinAble] ? params[:joinAble].permit(params[:joinAble].keys) : {}
+      joinAbleAlready = params[:joinAbleAlready] ? params[:joinAbleAlready].permit(params[:joinAbleAlready].keys) : {}
+      @joinAbleMember = joinAble.empty? ? joinAbleAlready
+                          : joinAbleAlready.empty? ? joinAble
+                            : joinAble.merge(joinAbleAlready).permit!.to_h.sort {|x, y| x <=> y}.to_h
     end
   end
 
@@ -326,6 +340,29 @@ class ProjectsController < ApplicationController
             end
           end
         end
+      end
+      return replaceFlag
+    end
+
+    ## project_membersテーブルのReplace処理
+    def projectMembersReplace(projectId, joinAbleMembers)
+      diff = []
+      replaceFlag = true
+      ## 該当案件の参画メンバーを取得
+      alreadyId = ProjectMember.where(project_id: projectId).pluck(:employee_number)
+      diff = alreadyId - joinAbleMembers.keys.map(&:to_i) ## 削除対象のメンバー
+      ## hash内をループ
+      joinAbleMembers.keys.map(&:to_i).map {|joinAbleMember|
+        ## joinAbleMembersハッシュのキーは文字列なので一応数値化
+        unless alreadyId.include?(joinAbleMember)
+          ## レコード追加
+          @projectMember = ProjectMember.new(project_id: projectId, employee_number: joinAbleMember, start_date: joinAbleMembers[joinAbleMember.to_s], end_date: nil)
+          replaceFlag = @projectMember.save ? true : false
+        end
+      }
+      diff.each do |del|
+        ## レコード削除
+        replaceFlag = ProjectMember.where(project_id: projectId, employee_number: del).delete_all ? true : false
       end
       return replaceFlag
     end

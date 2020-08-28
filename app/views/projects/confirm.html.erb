@@ -26,6 +26,9 @@
     $('#thMustSkill').height($('#tdMustSkill').height());
     $('#thWantSkill').height($('#tdWantSkill').height());
 
+    // 参画メンバーの高さ調整
+    $('#thJoinMember').height($('#tdJoinMember').height());
+
   });
 
 </script>
@@ -74,6 +77,9 @@
           </tr>
           <tr>
             <th id="thWantSkill">尚可スキル</th>
+          </tr>
+          <tr>
+            <th id="thJoinMember">参画メンバー</th>
           </tr>
         </tbody>
       </table>
@@ -187,6 +193,19 @@
                     </div>
                   <% end %>
                 </div>
+              <% else %>
+                なし
+              <% end %>
+            </td>
+          </tr>
+          <tr>
+            <td id="tdJoinMember" style="text-align:left;">
+              <% unless @joinAbleMember.empty? %>
+                <% @joinAbleMember.keys.each_with_index do |join, index| %>
+                  <%= getUser(join).name %>　<%= Date.parse(@joinAbleMember[join]).strftime("%Y年%-m月%-d日 ～") %>
+                  <% if index < @joinAbleMember.keys.length-1 %><br><% end %>
+                  <input type="hidden" name="joinAbleMember[<%= join %>]" value="<%= @joinAbleMember[join] %>">
+                <% end %>
               <% else %>
                 なし
               <% end %>
