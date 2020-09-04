@@ -8,13 +8,15 @@ class UsersController < ApplicationController
                 "INNER JOIN project_members ON users.employee_number = project_members.employee_number"]
   ## 参画有無(定数)
   JOIN_OR_NOT = ["無", "有"]
+  ## Userモデルのパラメータカラム
+  USER_PARAMS = [:employee_number, :name, :department, :birthday, :nearest_station, :telephone_number, :join_able_date, :password]
 
   def new
     invalidUrl()
     if request.post?
       flag = true
       ## エンジニア情報
-      @user = User.new(user_params)
+      @user = User.new(user_params(params["user"]["password"]))
       unless @user.save
         flag = false
       end
@@ -50,7 +52,7 @@ class UsersController < ApplicationController
     if request.post?
       flag = true
       @user = User.find(params["user"]["employee_number"])
-      unless @user.update_attributes(user_params)
+      unless @user.update_attributes(user_params(params["user"]["password"]))
         flag = false
       end
       ## 保有スキル情報
@@ -344,10 +346,9 @@ class UsersController < ApplicationController
 
   private
 
-    def user_params
-      params.require(:user).permit(:employee_number, :name, :department,
-                                   :birthday, :nearest_station,
-                                   :telephone_number, :join_able_date, :password)
+    def user_params(password)
+      list = password.present? ? USER_PARAMS : USER_PARAMS - [:password]
+      params.require(:user).permit(list)
     end
 
     def skill_params

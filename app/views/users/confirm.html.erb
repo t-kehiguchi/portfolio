@@ -133,7 +133,7 @@
           </tr>
           <tr>
             <td id="pass" style="text-align:left;">
-              ********
+              <%= pass = params[:password]; pass.present? ? "********" : "変更なし" %>
               <%= u.hidden_field :password, value: params[:password] %>
             </td>
           </tr>

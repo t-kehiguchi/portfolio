@@ -44,16 +44,19 @@
       validationCheck = false;
     }
     // パスワード
-    oneCheck($('#password').val(), "パスワード", true);
-    // パスワード確認
-    oneCheck($('#passwordConfirmation').val(), "パスワード確認", true);
-    // パスワードとパスワード確認一致しているか(ともに6文字以上入力が前提)
-    if($('#password').val() != '' && $('#password').val() != null
-        && $('#passwordConfirmation').val() != '' && $('#passwordConfirmation').val() != null
-          && $('#password').val().length >= 6 && $('#passwordConfirmation').val().length >= 6) {
-      if($('#password').val() != $('#passwordConfirmation').val()) {
-        alert("パスワードは一致してください。");
-        validationCheck = false;
+    if($('input[name="passwordFlg"]').length) {
+      // パスワード
+      oneCheck($('#password').val(), "パスワード", true);
+      // パスワード確認
+      oneCheck($('#passwordConfirmation').val(), "パスワード確認", true);
+      // パスワードとパスワード確認一致しているか(ともに6文字以上入力が前提)
+      if($('#password').val() != '' && $('#password').val() != null
+          && $('#passwordConfirmation').val() != '' && $('#passwordConfirmation').val() != null
+            && $('#password').val().length >= 6 && $('#passwordConfirmation').val().length >= 6) {
+        if($('#password').val() != $('#passwordConfirmation').val()) {
+          alert("パスワードは一致してください。");
+          validationCheck = false;
+        }
       }
     }
 
@@ -130,6 +133,21 @@
   $(function(){
     $("#skillButton").on("click", function() {
       $(this).next().slideToggle();
+    });
+  });
+
+　// パスワード追加ボタン
+  $(function(){
+    $("#passwordButton").on("click", function() {
+      $(this).next().slideToggle();
+      // パスワード入力フォームが表示されている場合
+      if($('input[name="passwordFlg"]').length) {
+        // hiddenパラメータ削除
+        $('input[name="passwordFlg"]').remove();
+      } else {
+        // hiddenパラメータ追加
+        $('#passwordButton').append('<input type="hidden" name="passwordFlg" value="">');
+      }
     });
   });
 
@@ -337,26 +355,40 @@
       </td>
     </tr>
     <tr>
-      <th>
-        <div style="display:inline-flex; vertical-align:sub;">
-          <p style="float:left;">パスワード</p>
-          <p style="color:red; float:left;">※</p>
-        </div>
-        <p style="margin-top:-10px;">（６文字以上）</p>
-      </th>
+      <th>パスワード</th>
       <td>
-        <%= f.password_field :password, class: 'form-control', :id=>"password", :style=>"width:60%;" %>
-      </td>
-    </tr>
-    <tr>
-      <th>
-        <div style="display:inline-flex; vertical-align:sub;">
-          <p style="float:left;">パスワード確認</p>
-          <p style="color:red; float:left;">※</p>
+        <div id="passwordButton" class="btn btn-primary" style="width:100%;">
+          パスワード入力
         </div>
-      </th>
-      <td>
-        <%= f.password_field :password_confirmation, class: 'form-control', :id=>"passwordConfirmation", :style=>"width:60%;" %>
+        <div id="passwordFlame" style="display:none;">
+          <table style="margin-top:10px;">
+            <tbody>
+              <tr>
+                <th width="25%">
+                  <div style="display:inline-flex; vertical-align:sub;">
+                    <p style="float:left;">パスワード</p>
+                    <p style="color:red; float:left;">※</p>
+                  </div>
+                  <p style="margin-top:-10px;">（６文字以上）</p>
+                </th>
+                <td>
+                  <%= f.password_field :password, class: 'form-control', :id=>"password", :style=>"width:60%;" %>
+                </td>
+              </tr>
+              <tr>
+                <th>
+                  <div style="display:inline-flex; vertical-align:sub;">
+                    <p style="float:left;">パスワード確認</p>
+                    <p style="color:red; float:left;">※</p>
+                  </div>
+                </th>
+                <td>
+                  <%= f.password_field :password_confirmation, class: 'form-control', :id=>"passwordConfirmation", :style=>"width:60%;" %>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
       </td>
     </tr>
   </table>
