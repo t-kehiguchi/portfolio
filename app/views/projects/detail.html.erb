@@ -164,11 +164,15 @@
       <tr>
         <td id="tdJoinMember" style="text-align:left;">
           <% if @projectMembers.present? %>
-            <% @projectMembers.each_with_index do |projectMember, index| %>
-              <%= link_to getUser(projectMember.employee_number).name, user_detail_path(projectMember.employee_number) %>
-              <% cnt = @projectMembers.count; if cnt > 1 and index+1 < cnt %>
-                <br>
+            <% if current_user.admin_flag %>
+              <% @projectMembers.each_with_index do |projectMember, index| %>
+                <%= link_to getUser(projectMember.employee_number).name, user_detail_path(projectMember.employee_number) %>
+                <% cnt = @projectMembers.count; if cnt > 1 and index+1 < cnt %>
+                  <br>
+                <% end %>
               <% end %>
+            <% else %>
+              <%= @projectMembers.count.to_s + "名参画中" %>
             <% end %>
           <% else %>
             なし
