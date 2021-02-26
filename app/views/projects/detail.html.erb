@@ -4,9 +4,12 @@
 
   $(document).ready(function(){
 
-    // 未入力OK(環境、備考 etc)の高さ調整
+    // 未入力OK(環境、募集人数、備考 etc)の高さ調整
     if(!$('#tdEnvironment').text().trim()) { // 環境
       $('#tdEnvironment').height($('#thEnvironment').height());
+    }
+    if(!$('#tdApplicantNum').text().trim()) { // 募集人数
+      $('#tdApplicantNum').height($('#thApplicantNum').height());
     }
     if(!$('#tdDescription').text().trim()) { // 備考
       $('#tdDescription').height($('#thDescription').height());
@@ -70,6 +73,9 @@
       </tr>
       <tr>
         <th id="thjoinMember">参画メンバー</th>
+      </tr>
+      <tr>
+        <th id="thApplicantNum">募集人数</th>
       </tr>
       <tr>
         <th id="thDescription">備考</th>
@@ -177,6 +183,11 @@
           <% else %>
             なし
           <% end %>
+        </td>
+      </tr>
+      <tr>
+        <td id="tdApplicantNum" style="text-align:left;">
+          <%= num = @project.applicant_num; nil != (num =~ /\A[0-9]+\z/) ? num + "名" : num %>
         </td>
       </tr>
       <tr>

@@ -247,7 +247,7 @@ class ProjectsController < ApplicationController
       params.require(:project).permit(:project_id, :project_name, :content,
                                       :environment, :price_min, :price_max, :min,
                                       :max, :start_date, :end_date, :start_time,
-                                      :end_time, :working_place, :description)
+                                      :end_time, :working_place, :applicant_num, :description)
     end
 
     ## 正しいURLか(正しくない場合はリダイレクトされる)

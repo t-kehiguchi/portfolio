@@ -14,9 +14,12 @@
 
   $(document).ready(function(){
 
-    // 未入力OK(環境、備考 etc)の高さ調整
+    // 未入力OK(環境、募集人数、備考 etc)の高さ調整
     if(!$('#tdEnvironment').text().trim()) { // 環境
       $('#tdEnvironment').height($('#thEnvironment').height());
+    }
+    if(!$('#tdApplicantNum').text().trim()) { // 募集人数
+      $('#tdApplicantNum').height($('#thApplicantNum').height());
     }
     if(!$('#tdDescription').text().trim()) { // 備考
       $('#tdDescription').height($('#thDescription').height());
@@ -68,6 +71,9 @@
           </tr>
           <tr>
             <th>時間</th>
+          </tr>
+          <tr>
+            <th id="thApplicantNum">募集人数</th>
           </tr>
           <tr>
             <th id="thDescription">備考</th>
@@ -156,6 +162,12 @@
               <% end %>
               <%= u.hidden_field :start_time, value: @startTime %>
               <%= u.hidden_field :end_time, value: @endTime %>
+            </td>
+          </tr>
+          <tr>
+            <td id="tdApplicantNum" style="text-align:left;">
+              <%= num = params[:applicantNum]; nil != (num =~ /\A[0-9]+\z/) ? num + "名" : num %>
+              <%= u.hidden_field :applicant_num, value: params[:applicantNum] %>
             </td>
           </tr>
           <tr>

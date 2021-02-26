@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20200724000000) do
+ActiveRecord::Schema.define(version: 2021_02_14_000000) do
 
   create_table "possessed_skills", primary_key: ["employee_number", "skill_id"], force: :cascade, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8" do |t|
     t.integer "employee_number", default: 0, null: false
@@ -56,6 +56,7 @@ ActiveRecord::Schema.define(version: 20200724000000) do
     t.string "start_time"
     t.string "end_time"
     t.string "working_place", null: false
+    t.string "applicant_num"
     t.string "description"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false

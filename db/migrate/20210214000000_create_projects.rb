@@ -14,6 +14,7 @@ class CreateProjects < ActiveRecord::Migration[5.1]
       t.string :start_time, default: nil
       t.string :end_time, default: nil
       t.string :working_place, null: false
+      t.string :applicant_num, default: nil
       t.string :description, default: nil
       t.timestamps
     end
