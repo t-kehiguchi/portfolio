@@ -148,6 +148,8 @@ class ProjectsController < ApplicationController
     else
       @projects = getAllProjects.paginate(page: params[:page], per_page: 10)
     end
+    ## 登録案件数合計
+    @count = params[:format].present? ? getAllProjects.count : @projects.count
     @projectSkills = ProjectMustSkill.all.order(project_id: "DESC")
   end
 

@@ -3,6 +3,7 @@ Rails.application.routes.draw do
   post   '/login',  to: 'sessions#create'
   delete '/logout', to: 'sessions#destroy'
   get    'users' , to: 'users#index', as: 'users'
+  get    'users/filter/:id', to: 'users#index', as: 'user_filter'
   delete 'users/:id' , to: 'users#destroy', as: 'user_delete'
   get    'users/new' , to: 'users#new'
   post   'users/new' , to: 'users#new', as: 'user_new'

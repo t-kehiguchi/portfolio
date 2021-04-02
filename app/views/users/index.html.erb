@@ -19,6 +19,32 @@
   <%= link_to "エンジニア検索", users_search_path, class:"btn btn-primary", :style=>"float:right;" %>
 </div>
 
+<div style="display:flex; height:150px; align-items:center; text-align:right; justify-content:flex-end;">
+  <p style="font-size:20px;">
+    登録者数 : <%= @count.to_s + '名' %><br>
+    空き要員数 :
+    <% if @notJoinCount.present? %>
+      <%= link_to @notJoinCount.count.to_s + '名', user_filter_path("notJoin") %>
+    <% else %>
+      0名
+    <% end %>
+    <br>
+    当月終了予定数 :
+    <% if @thisMonthEndNum.present? %>
+      <%= link_to @thisMonthEndNum.count.to_s + '名', user_filter_path("thisMonth") %>
+    <% else %>
+      0名
+    <% end %>
+    <br>
+    翌月終了予定数 :
+    <% if @nextMonthEndNum.present? %>
+      <%= link_to @nextMonthEndNum.count.to_s + '名', user_filter_path("nextMonth") %>
+    <% else %>
+      0名
+    <% end %>
+  </p>
+</div>
+
 <%= will_paginate :previous_label => ' &lt 前へ', :next_label => '次へ &gt' %>
 
 <% if @users.present? %>

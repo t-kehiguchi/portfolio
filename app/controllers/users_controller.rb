@@ -2,6 +2,8 @@ class UsersController < ApplicationController
 
   ## 検索結果
   @@result = []
+  ## 未参画情報、当月終了予定者情報、翌月終了予定者情報
+  @@notJoinInfo, @@thisMonthInfo, @@nextMonthInfo = [], [], []
   ## JOIN句(定数)
   JOIN_PHASE = ["INNER JOIN possessed_skills ON users.employee_number = possessed_skills.employee_number",
                 "LEFT OUTER JOIN project_members ON users.employee_number = project_members.employee_number",
@@ -230,13 +232,41 @@ class UsersController < ApplicationController
 
   def index
     invalidUrl()
-    ## エンジニア検索画面から検索が返ってきた場合
-    if params[:format].present?
-      @users = @@result.paginate(page: params[:page], per_page: 25).page(params[:page])
+    ## パラメータ指定のリクエストの場合
+    if params[:id].present?
+      ## 未参画
+      if "notJoin".eql?(params[:id])
+        @users, users = @@notJoinInfo.paginate(page: params[:page], per_page: 25).page(params[:page]), @@notJoinInfo
+      ## 当月終了予定
+      elsif "thisMonth".eql?(params[:id])
+        @users, users = @@thisMonthInfo.paginate(page: params[:page], per_page: 25).page(params[:page]), @@thisMonthInfo
+      ## 翌月終了予定
+      elsif "nextMonth".eql?(params[:id])
+        @users, users = @@nextMonthInfo.paginate(page: params[:page], per_page: 25).page(params[:page]), @@nextMonthInfo
+      end
     else
-      ## エンジニア(一般ユーザー)のみ抽出
-      @users = getAllUser.engineer.paginate(page: params[:page], per_page: 25)
+      ## エンジニア検索画面から検索が返ってきた場合
+      if params[:format].present?
+        @users, users = @@result.paginate(page: params[:page], per_page: 25).page(params[:page]), @@result
+      else
+        ## エンジニア(一般ユーザー)のみ抽出
+        @users, users = getAllUser.engineer.paginate(page: params[:page], per_page: 25), getAllUser.engineer
+      end
     end
+    ## サマリー情報
+    ids = users.map { |user| user.employee_number }
+    ## 要員数合計
+    @count = User.engineer.count
+    ## 未参画人数
+    notJoinCountId = users.pluck(:employee_number) - ProjectMember.where(employee_number: ids).pluck(:employee_number)
+    @notJoinCount = users.where(employee_number: notJoinCountId)
+    systemDate = Date.today
+    ## 当月終了予定人数
+    @thisMonthEndNum = getJoinEndEngineerInfo(ids, systemDate.beginning_of_month.to_s, systemDate.end_of_month.to_s)
+    ## 翌月終了予定人数
+    @nextMonthEndNum = getJoinEndEngineerInfo(ids, systemDate.next_month.beginning_of_month.to_s, systemDate.next_month.end_of_month.to_s)
+    ## クラス内で保持するためにそれぞれクラス変数に格納
+    @@notJoinInfo, @@thisMonthInfo, @@nextMonthInfo = @notJoinCount, @thisMonthEndNum, @nextMonthEndNum
   end
 
   def destroy
@@ -409,4 +439,10 @@ class UsersController < ApplicationController
       return first + moji + second + moji + third
     end
 
+    ## 月初と月末を指定して終了予定日に該当するエンジニアを取得するメソッド
+    def getJoinEndEngineerInfo(users, targetStartDate, targetEndDate)
+      return User.joins("INNER JOIN project_members ON users.employee_number = project_members.employee_number")
+               .where(employee_number: users)
+               .where("end_date BETWEEN ? AND ?", targetStartDate, targetEndDate)
+    end
 end
