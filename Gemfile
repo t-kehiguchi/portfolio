@@ -1,10 +1,12 @@
 source 'https://rubygems.org'
 
-gem 'rails',                   '5.1.7'
+ruby "2.6.6"
+
+gem 'rails',                   '>= 5.1.7'
 gem 'rails-i18n'
-gem 'bcrypt',                  '3.1.12'
+gem 'bcrypt',                  git: 'https://github.com/codahale/bcrypt-ruby.git', require: 'bcrypt'
 gem 'faker',                   '1.7.3'
-gem 'will_paginate',           '3.1.6'
+gem 'will_paginate',           '>= 3.1.6'
 gem 'bootstrap-will_paginate', '1.0.0'
 gem 'bootstrap-sass',          '3.4.1'
 gem 'puma',                    '3.12.6'
@@ -16,6 +18,8 @@ gem 'turbolinks',              '5.0.1'
 gem 'jbuilder',                '2.7.0'
 gem 'roo'
 gem 'mysql2'
+gem 'wdm',                     '>= 0.1.0'
+gem 'coffee-script-source',    '1.8.0'
 
 group :development, :test do
   gem 'dotenv-rails'
@@ -38,7 +42,7 @@ group :test do
 end
 
 group :production do
-  gem 'pg', '0.20.0'
+  gem 'pg', '>= 0.21.0'
 end
 
 # Windows環境ではtzinfo-dataというgemを含める必要があります
