@@ -18,7 +18,6 @@ gem 'turbolinks',              '5.0.1'
 gem 'jbuilder',                '2.7.0'
 gem 'roo'
 gem 'mysql2'
-gem 'wdm',                     '>= 0.1.0'
 gem 'coffee-script-source',    '1.8.0'
 
 group :development, :test do
@@ -31,6 +30,7 @@ group :development do
   gem 'listen',                '3.1.5'
   gem 'spring',                '2.0.2'
   gem 'spring-watcher-listen', '2.0.1'
+  gem 'wdm',                   '>= 0.1.0'
 end
 
 group :test do
