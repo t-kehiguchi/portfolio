@@ -23,6 +23,7 @@ gem 'coffee-script-source',    '1.8.0'
 group :development, :test do
   gem 'dotenv-rails'
   gem 'byebug', '9.0.6', platform: :mri
+  gem 'rspec-rails'
 end
 
 group :development do
