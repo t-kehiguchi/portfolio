@@ -120,13 +120,8 @@ module UsersHelper
 
   ## 最も経歴の長いスキル(ID)を取得するメソッド(スキルある人だけ)
   def getMostExperientedSkillId(employee_number)
-    unless PossessedSkill.where(employee_number: employee_number).empty?
-      return PossessedSkill.find_by(
-                employee_number: employee_number,
-                month: PossessedSkill
-                  .where(employee_number: employee_number).maximum(:month)
-                    ).skill_id
-    end
+    possessedSkill = PossessedSkill.where(employee_number: employee_number)
+    return possessedSkill.present? ? possessedSkill.map {|ps| [ps.skill_id, ps.month]}.max {|x,y| x[1]<=>y[1]}[0] : nil
   end
 
 end
