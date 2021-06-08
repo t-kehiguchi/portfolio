@@ -62,19 +62,15 @@ module UsersHelper
   end
 
   ## 3項目(年月日や電話番号)から～番目を指定して取得する
-  ## 例 getThree("1988-05-08", "second") → "05"
+  ## 例 getThree("1988-05-08", 'second') → "05"
   def getThree(value, number)
     ## 空は対象外
     if value.present?
-      start = value.index("-")
-      finish = value.index("-", start+1)
-      if number == 'first'
-        return value[0, start]
-      elsif number == 'second'
-        return value[start+1,finish-start-1]
-      elsif number == 'third'
-        return value[finish+1,value.length]
-      end
+      value = value.split("-")
+      ## 分割(split)されなかった場合はnilを返す
+      return nil if value.size <= 1
+      ## numberが「first」の場合は1番目、「second」の場合は2番目、「third」の場合は3番目、それ以外はnilを返す
+      return number == 'first' ? value[0] : number == 'second' ? value[1] : number == 'third' ? value[2] : nil
     end
   end
 
