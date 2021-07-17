@@ -155,12 +155,21 @@ RSpec.describe UsersHelper, type: :helper do
   end
 
   describe "スキルIDからスキル名を取得するメソッドについて" do
-    context "DB(skillsテーブル)にskill_idが1のレコードが存在するという前提で" do
+    context "DB(skillsテーブル)に存在するスキルIDを指定する場合" do
+      before "skill_idが1のレコードが存在するという前提で(仮に存在しない場合は追加する)" do
+        unless Skill.where(skill_id: 1).present?
+          Skill.create!(skill_id: 1, skill_name: "Windows")
+        end
+      end
       it "「Windows」であること" do
         expect(helper.getSkillName(1)).to eq "Windows"
       end
     end
-    context "DB(skillsテーブル)にskill_idが0のレコードが存在しないという前提で" do
+    context "DB(skillsテーブル)に存在しないスキルIDを指定する場合" do
+      before "skill_idが0のレコードが存在しないという前提で(仮に存在する場合は削除する)" do
+        record = Skill.where(skill_id: 0)
+        record.destroy_all if record.present?
+      end
       it "例外(skillテーブルからレコード取得しないでスキル名が取得できない)が発生すること" do
         expect do
           helper.getSkillName(0)
@@ -171,8 +180,10 @@ RSpec.describe UsersHelper, type: :helper do
 
   describe "保持スキルがあるか否かのCSS(display,disabled)を返すメソッドについて" do
     context "保持スキルがある場合" do
-      before "DBにレコードが存在しないことも前提" do
-        PossessedSkill.create!(employee_number: 12345678, skill_id: 1, month: 1)
+      before "DBにレコードが存在することも前提(仮に存在しない場合は追加する)" do
+        unless PossessedSkill.where(employee_number: 12345678, skill_id: 1).present?
+          PossessedSkill.create!(employee_number: 12345678, skill_id: 1, month: 1)
+        end
       end
       it "「display:none;, nil」が返却されること" do
         possessedSkills = PossessedSkill.where(employee_number: 12345678, skill_id: 1)
@@ -188,17 +199,21 @@ RSpec.describe UsersHelper, type: :helper do
 
   describe "最も経歴の長いスキル(ID)を取得するメソッド(スキルある人だけ)メソッドについて" do
     context "該当ユーザ(社員番号が「12345678」)の保持スキルのスキルが1つの場合" do
-      before "DBにレコードが存在しないことも前提" do
-        PossessedSkill.create!(employee_number: 12345678, skill_id: 1, month: 1)
+      before "DBにレコードが存在することも前提(仮に存在しない場合は追加する)" do
+        unless PossessedSkill.where(employee_number: 12345678, skill_id: 1).present?
+          PossessedSkill.create!(employee_number: 12345678, skill_id: 1, month: 1)
+        end
       end
       it "skill_idが「1」が返却されること" do
         expect(helper.getMostExperientedSkillId(12345678)).to eq 1
       end
     end
     context "該当ユーザ(社員番号が「23456789」)の保持スキルのスキルが複数存在する場合" do
-      before "DBにレコードが存在しないことも前提" do
+      before "DBにレコードが存在することも前提(仮に存在しない場合は追加する)" do
         for i in 1..3
-          PossessedSkill.create!(employee_number: 23456789, skill_id: i, month: i)
+          unless PossessedSkill.where(employee_number: 23456789, skill_id: i).present?
+            PossessedSkill.create!(employee_number: 23456789, skill_id: i, month: i)
+          end
         end
       end
       it "経験年数(month)が最大のskill_idが「3」が返却されること" do
@@ -206,9 +221,11 @@ RSpec.describe UsersHelper, type: :helper do
       end
     end
     context "該当ユーザ(社員番号が「34567890」)の保持スキルの経験年数(month)が全て同一の場合" do
-      before "DBにレコードが存在しないことも前提" do
+      before "DBにレコードが存在することも前提(仮に存在しない場合は追加する)" do
         for i in 1..5
-          PossessedSkill.create!(employee_number: 34567890, skill_id: i, month: 3)
+          unless PossessedSkill.where(employee_number: 34567890, skill_id: i).present?
+            PossessedSkill.create!(employee_number: 34567890, skill_id: i, month: 3)
+          end
         end
       end
       it "最初のskill_idの「1」が返却されること" do
