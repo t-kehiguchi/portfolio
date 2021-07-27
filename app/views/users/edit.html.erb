@@ -276,7 +276,7 @@
       <td>
         <div>
           <%= f.collection_select :join_year, getJoinYearMap, :first, :last,
-            { include_blank: true, selected: getThree(@user.join_able_date, 'first').to_i }, class: 'form-control', 
+            { include_blank: true, selected: getJoinYearMap[getThree(@user.join_able_date, 'first').to_i].present? ? getJoinYearMap[getThree(@user.join_able_date, 'first').to_i] : Date.today.year }, class: 'form-control',
               :style=>"float:left; margin-bottom:0px; width:15%;" %>
             <p id="join"> 年 </p>
           <%= f.collection_select :join_month, getMonthMap, :first, :last,
