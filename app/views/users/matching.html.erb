@@ -1,0 +1,50 @@
+<% provide(:title, 'エンジニアマッチング') %>
+
+<script>
+
+  // tableの行をhover
+  $(function(){
+    $("table tbody tr").hover(function() {
+      $(this).css('background-color','#fafafa');
+    }, function() {
+      $(this).css('background-color','');
+    });
+  });
+
+</script>
+
+<div>
+  <h3>「<%= User.find(params[:id]).name %>」さんの案件マッチング</h3>
+</div>
+
+<%= will_paginate @skillMatchInfos, :previous_label => ' &lt 前へ', :next_label => '次へ &gt' %>
+
+<table id="userMatching" class="table-bordered table-condensed">
+  <thead>
+    <tr style="background-color:#ebebeb;">
+      <th>案件番号</th>
+      <th>案件名</th>
+      <th>案件開始日</th>
+      <th>マッチングスキル</th>
+    </tr>
+  </thead>
+  <tbody>
+    <% @skillMatchInfos.each do |skillMatchInfo| %>
+      <tr style="height:50px;">
+        <% @project = Project.find(skillMatchInfo[0]) %>
+        <td style="width:15%;"><%= link_to skillMatchInfo[0], project_detail_path(skillMatchInfo[0]) %></td>
+        <td id="name"><%= @project.project_name %></td>
+        <td style="width:15%;"><%= Date.parse(@project.start_date).strftime("%Y年%-m月%-d日　～") %></td>
+        <td id="matchingSkills">
+          <% skillMatchInfo[1][1].each do |matchingSkillId| %>
+            <div class="btn btn-primary btn-sm" style="margin-right:10px; cursor:default;">
+              <%= getSkillName(matchingSkillId) %>
+            </div>
+          <% end %>
+        </td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+
+<%= will_paginate @skillMatchInfos, :previous_label => ' &lt 前へ', :next_label => '次へ &gt' %>

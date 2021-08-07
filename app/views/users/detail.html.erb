@@ -4,8 +4,8 @@
 
   $(document).ready(function(){
 
-    // 保持スキルの高さ調整
-    $('#thSkill').height($('#tdSkill').height());
+    // 保持スキルの高さ調整(プラスPadding10px分も)
+    $('#thSkill').height($('td#tdSkill').height()+10);
 
     // スキルアイコンを触れると経験年数吹き出しが出る
     $("#tdSkill div").hover(
@@ -109,18 +109,21 @@
           </tr>
         <% end %>
         <tr>
-          <td id="tdSkill" style="text-align:left;">
-            <% unless @possessedSkills.empty? %>
+          <% unless @possessedSkills.empty? %>
+            <td id="tdSkill" style="text-align:left; padding:10px;">
               <% @possessedSkills.each do |possessedSkill| %>
                 <div class="btn btn-primary btn-sm" style="cursor:default;">
                   <input type="hidden" name="month" id="month" value=<%= getYearAndMonth(possessedSkill.month) %>>
                   <%= getSkillName(possessedSkill.skill_id) %>
                 </div>
               <% end %>
-            <% else %>
-              なし
-            <% end %>
-          </td>
+              <% if current_user.admin_flag? %>
+                <br><p style="margin-top:10px; margin-bottom:0px;"><%= link_to 'マッチする案件照会', user_matching_path(@user.employee_number) %></p>
+              <% end %>
+            </td>
+          <% else %>
+            <td style="text-align:left;">なし</td>
+          <% end %>
         </tr>
       <% end %>
     </tbody>

@@ -374,6 +374,14 @@ class UsersController < ApplicationController
     end
   end
 
+  def matching
+    invalidUrl()
+    ## 該当エンジニアのスキル(スキルIDの昇順)
+    userSkills = PossessedSkill.where(employee_number: params[:id]).pluck(:skill_id).sort
+    ## 最終的にポイントのないレコードは削除する
+    @skillMatchInfos = skillMatchInfo(userSkills).delete_if {|key, value| value[0].to_i < 1}.to_a.paginate(page: params[:page], per_page: 10)
+  end
+
   private
 
     def user_params(password)
@@ -444,5 +452,48 @@ class UsersController < ApplicationController
       return User.joins("INNER JOIN project_members ON users.employee_number = project_members.employee_number")
                .where(employee_number: users)
                .where("end_date BETWEEN ? AND ?", targetStartDate, targetEndDate)
+    end
+
+    ## 該当の必須及び尚可スキルからマッチする案件情報を取得
+    def skillMatchInfo(userSkills)
+      matchInfoHash = {}
+      ## 必須スキル(案件番号ごとに必須スキルIDのリストをHash形式で取得する)
+      mustSkills = getHashOfSkillListPerProjectId(ProjectMustSkill.order(:project_id).pluck(:project_id, :must_skill_id))
+      ## 尚可スキル(案件番号ごとに尚可スキルIDのリストをHash形式で取得する)
+      wantSkills = getHashOfSkillListPerProjectId(ProjectWantSkill.order(:project_id).pluck(:project_id, :want_skill_id))
+      mustSkills.each do |pid, sid|
+        point = 0
+        point = point + (userSkills & sid).count
+        skillList = []
+        (userSkills & sid).map {|ms| skillList.push ms}
+        ## 同案件で尚可スキルもある場合
+        if wantSkills[pid].present?
+          wsid = wantSkills[pid]
+          ## 必須スキルと尚可スキル重複している場合は対象外(その分取り除く)
+          wsid = wsid - sid if (sid & wsid).present?
+          point = point + (userSkills & wsid).count * 2
+          (userSkills & wsid).map {|ws| skillList.push ws}
+        end
+        matchInfoHash[pid] = [point, skillList]
+      end
+      ## ポイントの高い順に並べ替え(ポイントが同一なら案件番号の昇順)
+      return (matchInfoHash.sort_by {|a, b| [-b[0], a]}).to_h
+    end
+
+    ## Hash形式で案件番号ごとにスキルIDのリストを生成するメソッド
+    def getHashOfSkillListPerProjectId(skillInfos)
+      hash = {}
+      projectId, skillIds = "", ""
+      skillInfos.each_with_index do |skillPerProjectId, index|
+        if projectId.present? and projectId != skillPerProjectId[0]
+          hash[projectId] = skillIds.split(",").map(&:to_i)
+          skillIds = ""
+        end
+        projectId = (projectId.empty? or projectId != skillPerProjectId[0]) ? skillPerProjectId[0] : projectId
+        skillIds = skillIds + skillPerProjectId[1].to_s + "," if projectId == skillPerProjectId[0]
+        ## リストの最後もHashに格納
+        hash[projectId] = skillIds.split(",").map(&:to_i) if (index+1) == skillInfos.count
+      end
+      return hash
     end
 end

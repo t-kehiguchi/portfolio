@@ -194,6 +194,22 @@ p#tel, p#birth, p#join, p#price, p#time, p#date {
   display: table;
 }
 
+/* Users matching */
+table#userMatching > tbody > tr {
+  td {
+    padding: 10px;
+  }
+  > td#name {
+    width: 20%;
+    text-align: left;
+    word-break: break-word;
+  }
+  > td#matchingSkills {
+    width: 50%;
+    text-align: left;
+  }
+}
+
 #age {
   float: left;
   margin-top: 7px;
