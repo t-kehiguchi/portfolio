@@ -202,13 +202,8 @@ class UsersController < ApplicationController
                           params[:tel1].to_s, params[:tel2].to_s, 
                             params[:tel3].to_s, '-')
       ## 参画可能日(入力した場合にパラメータ用と表示用で分けている)
-      if params[:join_year].present? and params[:join_month].present? and params[:join_day].present?
-        @join_param = getConcatThreeItems(
-                        params[:join_year].to_s, 
-                          format("%02d",params[:join_month]),
-                            format("%02d",params[:join_day]), '-')
-        @join_display = params[:join_year] + '年' + params[:join_month] + '月' + params[:join_day] + '日 ～'
-      end
+      @join_param = params[:joinAbleDate] if params[:joinAbleDate].present?
+      @join_display = Date.parse(params[:joinAbleDate]).strftime("%Y年%-m月%-d日 ～") if params[:joinAbleDate].present?
       ## スキル
       @skillList = []
       params[:skill].each_with_index do |s, index|
