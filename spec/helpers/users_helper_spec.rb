@@ -53,21 +53,6 @@ RSpec.describe UsersHelper, type: :helper do
     end
   end
 
-  describe "参画可能日の年プルダウンを取得するためのMapについて" do
-    context "現在日付が2020年6月8日の場合" do
-      before do
-        allow(Date).to receive(:today).and_return Date.new(2020,6,8)
-      end
-      it "2020年～2024年の5年分生成されること" do
-        expect(helper.getJoinYearMap).to eq(
-          {
-            2020=>2020, 2021=>2021, 2022=>2022, 2023=>2023, 2024=>2024
-          }
-        )
-      end
-    end
-  end
-
   describe "3項目(年月日や電話番号)から～番目を指定して取得するメソッドについて" do
     context "年月日(1988年5月8日)から1番目(first)を指定する場合" do
       it "1988が取得されること" do

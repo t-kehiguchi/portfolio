@@ -20,17 +20,6 @@ module UsersHelper
     return hash
   end
 
-  ## 参画可能日の年プルダウンを取得するためのMap
-  def getJoinYearMap
-    hash = {}
-    ## 現在年～5年分まで取得
-    now = Date.today.year
-    for year in now..(now+5-1)
-      hash[year] = year
-    end
-    return hash
-  end
-
   ## 月プルダウンを取得するためのMap
   def getMonthMap
     hash = {}
