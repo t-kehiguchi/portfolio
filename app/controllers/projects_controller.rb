@@ -99,20 +99,11 @@ class ProjectsController < ApplicationController
         redirect_to root_url
       end
       ## 開始日(パラメータ用と表示用で分けている)
-      @start_param = getConcatThreeItems(
-                          params[:start_year].to_s,
-                            format("%02d",params[:start_month]),
-                              format("%02d",params[:start_day]), '-')
-      @start_display = params[:start_year] + '年' +
-                          params[:start_month] + '月' + params[:start_day] + '日 ～'
+      @start_param = params[:projectStartDate]
+      @start_display = Date.parse(params[:projectStartDate]).strftime("%Y年%-m月%-d日 ～")
       ## 終了予定日(入力した場合にパラメータ用と表示用で分けている)
-      if params[:end_year].present? and params[:end_month].present? and params[:end_day].present?
-        @end_param = getConcatThreeItems(
-                        params[:end_year].to_s,
-                          format("%02d",params[:end_month]),
-                            format("%02d",params[:end_day]), '-')
-        @end_display = '～ ' + params[:end_year] + '年' + params[:end_month] + '月' + params[:end_day] + '日'
-      end
+      @end_param = params[:projectEndDate] if params[:projectEndDate].present?
+      @end_display = Date.parse(params[:projectEndDate]).strftime("～ %Y年%-m月%-d日") if params[:projectEndDate].present?
       ## 時間(入力した場合にパラメータ用と表示用で分けている)
       if params[:time_from_hour].present? and params[:time_from_minites].present? and params[:time_to_hour].present? and params[:time_to_minites].present?
         @startTime = getConcatTwoItems(

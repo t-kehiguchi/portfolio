@@ -35,30 +35,8 @@
       twoCheck($('#hourMin').val(), $('#hourMax').val(), "精算幅");
     }
     // 案件開始日
-    threeCheck($('[name=start_year] option:selected').val(),
-      $('[name=start_month] option:selected').val(),
-        $('[name=start_day] option:selected').val(), "案件開始日");
-    // 案件終了日(必須ではない)
-    var endYear = $('[name=end_year] option:selected').val();
-    var endMonth = $('[name=end_month] option:selected').val();
-    var endDay = $('[name=end_day] option:selected').val();
-    // 案件終了日はすべて空かすべて入力されている場合
-    if(
-        (endYear != '' && endYear != null) &&
-          (endMonth != '' && endMonth != null) &&
-            (endDay != '' && endDay != null)
-      ) {
-        if(!isDate(endYear+"/"+endMonth+"/"+endDay)){
-          alert("案件終了予定日を正しい日付にしてください");
-          validationCheck = false;
-        }
-    } else if(
-        (endYear == '' || endYear == null) &&
-          (endMonth == '' || endMonth == null) &&
-            (endDay == '' || endDay == null)
-      ) {
-    } else {
-      alert("案件終了予定日はすべて空かすべて入力されているかにしてください。");
+    if($.isEmptyObject($('#projectStartDate').val())) {
+      alert('案件開始日は必須項目なので入力されていないか正しい日付にしていないかのいずれかです。');
       validationCheck = false;
     }
     // 時間
@@ -109,54 +87,6 @@
           validationCheck = false;
         }
       }
-    }
-
-    // 3個(例えば年月日)の項目に必須かチェック
-    function threeCheck(value1, value2, value3, name) {
-
-      var flag = true;
-
-      if(value1 == '' || value1 == null) {
-        flag = false;
-      } else if(value2 == '' || value2 == null) {
-        flag = false;
-      } else if(value3 == '' || value3 == null) {
-        flag = false;
-      }
-
-      if(!flag) {
-        alert(name + "は必須項目です");
-        validationCheck = false;
-      } else {
-        if(!isDate(value1+"/"+value2+"/"+value3)) {
-          alert(name + "を正しい日付にしてください");
-          validationCheck = false;
-        }
-      }
-    }
-
-    // 日付バリデーション
-    function isDate(strDate){
-      // 空文字は無視
-      if(strDate == ""){
-        return true;
-      }
-      // 年/月/日の形式のみ許容する
-      if(!strDate.match(/^\d{4}\/\d{1,2}\/\d{1,2}$/)){
-        return false;
-      }
-
-      // 日付変換された日付が入力値と同じ事を確認
-      // new Date()の引数に不正な日付が入力された場合、
-      // 相当する日付に変換されてしまうため
-      var date = new Date(strDate);
-      if(date.getFullYear() !=  strDate.split("/")[0]
-        || date.getMonth() != strDate.split("/")[1] - 1
-        || date.getDate() != strDate.split("/")[2]
-      ){
-        return false;
-      }
-      return true;
     }
 
   }
@@ -308,21 +238,8 @@
           <p style="color:red; float:left;">※</p>
         </div>
       </th>
-      <td>
-        <div>
-          <%= f.collection_select :start_year, getStartOrEndYearMap(nil), :first, :last,
-            { include_blank: true, selected: "" }, class: 'form-control',
-              :style=>"float:left; margin-bottom:0px; width:15%;" %>
-            <p id="date"> 年 </p>
-          <%= f.collection_select :start_month, getMonthMap, :first, :last,
-            { include_blank: true, selected: "" }, class: 'form-control',
-              :style=>"float:left; margin-bottom:0px; width:15%;" %>
-            <p id="date"> 月 </p>
-          <%= f.collection_select :start_day, getDayMap, :first, :last,
-            { include_blank: true, selected: "" }, class: 'form-control',
-              :style=>"float:left; margin-bottom:0px; width:15%;" %>
-            <p id="date"> 日 </p>
-        </div>
+      <td style="text-align:left;">
+        <%= f.date_field :projectStartDate, class: 'form-control', :id=>"projectStartDate", :style=>"width:60%;" %>
       </td>
     </tr>
     <tr>
@@ -331,21 +248,8 @@
           <p style="float:left;">案件終了予定日</p>
         </div>
       </th>
-      <td>
-        <div>
-          <%= f.collection_select :end_year, getStartOrEndYearMap(nil), :first, :last,
-            { include_blank: true, selected: "" }, class: 'form-control',
-              :style=>"float:left; margin-bottom:0px; width:15%;" %>
-            <p id="date"> 年 </p>
-          <%= f.collection_select :end_month, getMonthMap, :first, :last,
-            { include_blank: true, selected: "" }, class: 'form-control',
-              :style=>"float:left; margin-bottom:0px; width:15%;" %>
-            <p id="date"> 月 </p>
-          <%= f.collection_select :end_day, getDayMap, :first, :last,
-            { include_blank: true, selected: "" }, class: 'form-control',
-              :style=>"float:left; margin-bottom:0px; width:15%;" %>
-            <p id="date"> 日 </p>
-        </div>
+      <td style="text-align:left;">
+        <%= f.date_field :projectEndDate, class: 'form-control', :style=>"width:60%;" %>
       </td>
     </tr>
     <tr>
