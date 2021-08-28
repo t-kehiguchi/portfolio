@@ -83,46 +83,6 @@ RSpec.describe ProjectsHelper, type: :helper do
     end
   end
 
-  describe "案件開始(終了予定)日の年プルダウンを取得するためのMap" do
-    context "日付が指定ある前提で(対象年は2021年)" do
-      it "2019～2023年までのプルダウンが生成されること" do
-        expect(helper.getStartOrEndYearMap("2021/06/18")).to eq(
-          {
-            2019=>2019, 2020=>2020, 2021=>2021, 2022=>2022, 2023=>2023
-          }
-        )
-      end
-    end
-    context "日付指定なし かつ projectIdが存在する場合" do
-      before "以下のProjectテーブルのレコードがDBに存在しない前提で(仮に存在した場合はReplace)" do
-        record = Project.where(project_id: "20210618-01")
-        record.destroy_all if record.present?
-        Project.create!(project_id: "20210618-01", project_name: "A", content: "B", 
-                        min: 500000, max: 1000000, start_date: "2021-06-01", 
-                        working_place: "C")
-      end
-      it "2021～2025年までのプルダウンが生成されること" do
-        expect(helper.getStartOrEndYearMap("", "20210618-01")).to eq(
-          {
-            2021=>2021, 2022=>2022, 2023=>2023, 2024=>2024, 2025=>2025
-          }
-        )
-      end
-    end
-    context "日付指定なし かつ projectIdが存在しない場合" do
-      before "現在日付が2020年6月18日であることを前提で" do
-        allow(Date).to receive(:today).and_return Date.new(2020,6,18)
-      end
-      it "2020～2024年までのプルダウンが生成されること" do
-        expect(helper.getStartOrEndYearMap("")).to eq(
-          {
-            2020=>2020, 2021=>2021, 2022=>2022, 2023=>2023, 2024=>2024
-          }
-        )
-      end
-    end
-  end
-
   describe "プルダウンを取得するためのMap" do
     it "月プルダウン(1月～12月)が生成されること" do
       expect(helper.getMonthMap).to eq(

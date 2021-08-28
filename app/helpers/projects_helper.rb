@@ -32,26 +32,6 @@ module ProjectsHelper
     return price
   end
 
-  ## 案件開始(終了予定)日の年プルダウンを取得するためのMap
-  def getStartOrEndYearMap(date, projectId=nil)
-    hash = {}
-    ## 案件終了日は必須ではないので
-    if date.present?
-      ## (対象年-2)～対象年～(対象年+2)まで取得
-      for year in (date.to_date.year-2)..( date.to_date.year+2)
-        hash[year] = year
-      end
-    else
-      ## 案件終了の場合
-      ## 案件開始日の年を取得し、その年～5年分まで取得(新規の場合はprojectIdもないので、その場合は現在年)
-      start = projectId.present? ? Project.find(projectId).start_date.to_date.year : Date.today.year
-      for year in start..(start+5-1)
-        hash[year] = year
-      end
-    end
-    return hash
-  end
-
   ## 月プルダウンを取得するためのMap
   def getMonthMap
     hash = {}
