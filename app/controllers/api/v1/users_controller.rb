@@ -80,7 +80,27 @@ module Api
         render json: result.count
       end
 
+      def favorite
+        ## Postメソッドのみ実行
+        if request.post?
+          ## params[:favorite]が文字列で渡されるので、boolean型に変換する
+          params[:favorite] = params[:favorite] == "true" ? true : false
+          if params[:favorite] ## trueの場合、レコード登録(案件番号、社員番号、ログイン社員番号(基本的に管理者))
+            params[:created_employee_number] = current_user.employee_number
+            @projectMatching = ProjectMatching.new(project_matching_params)
+            @projectMatching.save
+          else ## falseの場合、押下した案件番号と社員番号に紐づくレコード削除
+            @projectMatching = ProjectMatching.where(project_id: params[:project_id], employee_number: params[:employee_number])
+            @projectMatching.delete_all
+          end
+        end
+      end
+
       private
+
+        def project_matching_params
+          params.permit(:project_id, :employee_number, :created_employee_number)
+        end
 
         ## 誕生日から実年齢を取得するメソッド
         def getAge(birthday)

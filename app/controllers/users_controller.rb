@@ -223,6 +223,8 @@ class UsersController < ApplicationController
     @possessedSkills = PossessedSkill.where(employee_number: params[:id]).order(month: "DESC")
     ## 参画しているか(終了日がnil)
     @join = ProjectMember.where("employee_number = ? AND (end_date is null OR #{Date.today.strftime("%Y-%m-%d")} <= end_date)", params[:id]).order(start_date: "DESC").first
+    ## お気に入り案件(チェックした順)
+    @favoriteProjects = ProjectMatching.where(employee_number: params[:id]).order(created_at: "ASC").pluck(:project_id, :created_employee_number)
   end
 
   def index
@@ -375,6 +377,8 @@ class UsersController < ApplicationController
     userSkills = PossessedSkill.where(employee_number: params[:id]).pluck(:skill_id).sort
     ## 最終的にポイントのないレコードは削除する
     @skillMatchInfos = skillMatchInfo(userSkills).delete_if {|key, value| value[0].to_i < 1}.to_a.paginate(page: params[:page], per_page: 10)
+    ## お気に入り案件
+    @favoriteProjects = ProjectMatching.where(employee_number: params[:id]).pluck(:project_id)
   end
 
   private

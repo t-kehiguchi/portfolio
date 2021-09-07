@@ -4,8 +4,16 @@
 
   $(document).ready(function(){
 
+    // 「more」又は「close」リンクを押下した回数(デフォルトは0回)
+    var count = 0;
+
+    // 6行目以降は非表示
+    $('ul:gt(5)').hide();
+
     // 保持スキルの高さ調整(プラスPadding10px分も)
     $('#thSkill').height($('td#tdSkill').height()+10);
+    // お気に入り案件の高さ調整(プラスPadding10px分も)
+    $('#thFavoriteProject').height($('td#tdFavoriteProject').height()+10);
 
     // スキルアイコンを触れると経験年数吹き出しが出る
     $("#tdSkill div").hover(
@@ -21,6 +29,28 @@
         $(this).find(".tooltips").remove();
       }
     );
+
+    // お気に入り案件枠の「more」or「close」リンクを押下した場合の処理
+    $("#toggle").click(function(){
+      if(count%2 == 0) {
+        // 6行目以降表示し、リンク名を「close」に変更
+        $('ul:gt(5)').show(); $(this).text("close");
+        // さらに11行以上の場合はスクロールを表示、高さを調整する
+        if($('div#favorite ul').length > 10) {
+          $('div#favorite').css('overflow','auto'); $('div#favorite').css('height', '300px');
+        }
+      } else {
+        // 6行目以降非表示し、リンク名を「more」に変更
+        $('ul:gt(5)').hide(); $(this).text("more");
+        // さらに11行以上の場合はスクロールを非表示、高さを調整する
+        if($('div#favorite ul').length > 10) {
+          $('div#favorite').css('overflow',''); $('div#favorite').css('height', '');
+        }
+      }
+      // 上記に応じて高さを調整
+      $('#thFavoriteProject').height($('td#tdFavoriteProject').height()+10);
+      count++;
+    });
 
   })
 
@@ -60,6 +90,9 @@
         <% end %>
         <tr>
           <th id="thSkill">保持スキル</th>
+        </tr>
+        <tr>
+          <th id="thFavoriteProject">お気に入り案件</th>
         </tr>
       <% end %>
     </tbody>
@@ -120,6 +153,25 @@
               <% if current_user.admin_flag? %>
                 <br><p style="margin-top:10px; margin-bottom:0px;"><%= link_to 'マッチする案件照会', user_matching_path(@user.employee_number) %></p>
               <% end %>
+            </td>
+          <% else %>
+            <td style="text-align:left;">なし</td>
+          <% end %>
+        </tr>
+        <tr>
+          <% unless @favoriteProjects.empty? %>
+            <td id="tdFavoriteProject" style="text-align:left; padding:10px;">
+              <div id="favorite" style="margin-top:10px; margin-bottom:10px;">
+              <% @favoriteProjects.each_with_index do |favoriteProject, index| %>
+                <ul>
+                  <li>
+                    <%= "「" + User.find(favoriteProject[1]).name + "」さんからおすすめ案件" %> : <%= link_to favoriteProject[0], project_detail_path(favoriteProject[0]) %>
+                    <br>
+                  </li>
+                </ul>
+              <% end %>
+              </div>
+              <% if @favoriteProjects.count > 5 %><a href="javascript:void(0)" id="toggle" style="float:right;">more</a><% end %>
             </td>
           <% else %>
             <td style="text-align:left;">なし</td>

@@ -11,6 +11,23 @@
     });
   });
 
+  // お気に入りチェックボックス押下処理
+  $(function(){
+    $(document).on('change', '#favorite', function() {
+      $.ajax({
+        url: '/api/v1/users/favorite',
+        type: 'POST',
+        data: {
+          project_id: $(this).closest('tr').find('#projectId').text(),
+          employee_number: location.pathname.split('/')[2], // 「/users/社員番号/matching」の2番目を取得
+          favorite: $(this).prop('checked')
+        },
+        dataType: 'json'
+      }).done(function(data){
+      });
+    });
+  });
+
 </script>
 
 <div>
@@ -26,13 +43,14 @@
       <th>案件名</th>
       <th>案件開始日</th>
       <th>マッチングスキル</th>
+      <th>この案件にお気に入り</th>
     </tr>
   </thead>
   <tbody>
     <% @skillMatchInfos.each do |skillMatchInfo| %>
       <tr style="height:50px;">
         <% @project = Project.find(skillMatchInfo[0]) %>
-        <td style="width:15%;"><%= link_to skillMatchInfo[0], project_detail_path(skillMatchInfo[0]) %></td>
+        <td id="projectId" style="width:15%;"><%= link_to skillMatchInfo[0], project_detail_path(skillMatchInfo[0]) %></td>
         <td id="name"><%= @project.project_name %></td>
         <td style="width:15%;"><%= Date.parse(@project.start_date).strftime("%Y年%-m月%-d日　～") %></td>
         <td id="matchingSkills">
@@ -41,6 +59,9 @@
               <%= getSkillName(matchingSkillId) %>
             </div>
           <% end %>
+        </td>
+        <td style="width:15%;">
+          <input type="checkbox" id="favorite" <%= @favoriteProjects.include?(skillMatchInfo[0]) ? "checked" : "" %>>
         </td>
       </tr>
     <% end %>
