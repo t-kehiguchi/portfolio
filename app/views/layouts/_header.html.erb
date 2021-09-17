@@ -1,6 +1,10 @@
 <header class="navbar navbar-info">
   <div class="container" style="width:auto;">
-    <p id="logo">社内案件マッチング</p>
+    <% if logged_in? %>
+      <%= link_to "社内案件マッチング", current_user.admin_flag? ? users_path : user_detail_path(current_user), id: "logo" %>
+    <% else %>
+      <p id="logo">社内案件マッチング</p>
+    <% end %>
     <nav>
       <ul class="nav navbar-nav navbar-right">
         <% if logged_in? %>
