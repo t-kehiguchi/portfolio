@@ -10,7 +10,7 @@ class SessionsController < ApplicationController
         redirect_to user_detail_url user
       end
     else
-      flash[:danger] = '社員番号とパスワードが一致しませんでした。'
+      flash.now[:danger] = '社員番号とパスワードが一致しませんでした。'
       render 'static_pages/top'
     end
   end
