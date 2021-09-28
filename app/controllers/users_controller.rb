@@ -36,12 +36,12 @@ class UsersController < ApplicationController
               flag = false
             end
           else
-            flash.new[:danger] = 'スキル「' + getSkillName(s["skill_id"]) + '」は未経験扱いとなるので登録しませんでした。'
+            flash.now[:danger] = 'スキル「' + getSkillName(s["skill_id"]) + '」は未経験扱いとなるので登録しませんでした。'
           end
         end
       end
       if flag
-        flash.new[:success] = @user.name + 'さん作成しました。'
+        flash.now[:success] = @user.name + 'さん作成しました。'
         redirect_to root_url
       end
     else
@@ -84,7 +84,7 @@ class UsersController < ApplicationController
                   flag = false
                 end
               else
-                flash.new[:danger] = 'スキル「' + getSkillName(insert["skill_id"]) + '」は未経験扱いとなるので登録しませんでした。'
+                flash.now[:danger] = 'スキル「' + getSkillName(insert["skill_id"]) + '」は未経験扱いとなるので登録しませんでした。'
               end
             end
           }
@@ -116,7 +116,7 @@ class UsersController < ApplicationController
                   flag = false
                 end
               else
-                flash.new[:danger] = 'スキル「' + getSkillName(insert["skill_id"]) + '」は未経験扱いとなるので登録しませんでした。'
+                flash.now[:danger] = 'スキル「' + getSkillName(insert["skill_id"]) + '」は未経験扱いとなるので登録しませんでした。'
               end
             end
           }
@@ -145,7 +145,7 @@ class UsersController < ApplicationController
                   flag = false
                 end
               else
-                flash.new[:danger] = 'スキル「' + getSkillName(insert["skill_id"]) + '」は未経験扱いとなるので登録しませんでした。'
+                flash.now[:danger] = 'スキル「' + getSkillName(insert["skill_id"]) + '」は未経験扱いとなるので登録しませんでした。'
               end
             end
           }
@@ -158,7 +158,7 @@ class UsersController < ApplicationController
         end
       end
       if flag
-        flash.new[:success] = @user.name + 'さんの情報更新しました。'
+        flash.now[:success] = @user.name + 'さんの情報更新しました。'
         redirect_to root_url
       end
     else
@@ -178,7 +178,7 @@ class UsersController < ApplicationController
     return if response_body ## 一般ユーザーのみ強制リダイレクト
     ## 登録画面か更新画面からの遷移ではない場合は
     unless request.referer or params[:name].present?
-      flash.new[:danger] = '登録画面か更新画面から遷移してください。'
+      flash.now[:danger] = '登録画面か更新画面から遷移してください。'
       redirect_to root_url
     else
       ## 遷移元の情報を取得
@@ -187,7 +187,7 @@ class UsersController < ApplicationController
       @actionName = path[:action]
       ## 登録画面か更新画面からの遷移ではない場合は
       unless @actionName == 'new' or @actionName == 'edit'
-        flash.new[:danger] = '登録画面か更新画面から遷移してください。'
+        flash.now[:danger] = '登録画面か更新画面から遷移してください。'
         redirect_to root_url
       end
       ## 誕生日(パラメータ用と表示用で分けている)
@@ -288,7 +288,7 @@ class UsersController < ApplicationController
       end
     end
     if deleteFlag
-      flash.new[:success] = @user.name + 'さんの情報を削除しました。'
+      flash.now[:success] = @user.name + 'さんの情報を削除しました。'
       redirect_to users_url
     end
   end
@@ -397,12 +397,12 @@ class UsersController < ApplicationController
       if user
         unless current_user.admin_flag
           unless user.employee_number == current_user.employee_number
-            flash.new[:danger] = '一般ユーザーが他人のユーザーの情報にアクセスできません。'
+            flash.now[:danger] = '一般ユーザーが他人のユーザーの情報にアクセスできません。'
             redirect_to root_url
           end
         end
       elsif !current_user.admin_flag
-        flash.new[:danger] = '管理者以外のユーザーはアクセスできません。'
+        flash.now[:danger] = '管理者以外のユーザーはアクセスできません。'
         redirect_to root_url
       end
     end
