@@ -48,6 +48,11 @@
           <tr>
             <th>参画可能日</th>
           </tr>
+          <% if params.has_key?(:joinEndDate) %>
+            <tr>
+              <th>参画終了予定日</th>
+            </tr>
+          <% end %>
           <tr>
             <th id="thSkill">スキル</th>
           </tr>
@@ -105,6 +110,18 @@
               <%= u.hidden_field :join_able_date, value: @join_param %>
             </td>
           </tr>
+          <% if params.has_key?(:joinEndDate) %>
+            <tr>
+              <td style="text-align:left;">
+                <% if @join_end_param %>
+                  <%= @join_end_display %>
+                <% else %>
+                  未定
+                <% end %>
+                <%= u.hidden_field :join_end_date, value: @join_end_param %>
+              </td>
+            </tr>
+          <% end %>
           <tr>
             <td id="tdSkill" style="text-align:left;">
               <% if params[:skill].filter {|skill| skill.present?}.count > 0 %>

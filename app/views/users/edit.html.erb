@@ -255,6 +255,15 @@
       </td>
     </tr>
     <tr>
+    <% if @latestJoinInfo.present? %>
+      <tr>
+        <th>参画終了予定日</th>
+        <td style="text-align:left;">
+          <%= f.date_field :joinEndDate, value: @latestJoinInfo.end_date, class: 'form-control', :style=>"width:60%;" %>
+        </td>
+      </tr>
+    <% end %>
+    <tr>
       <th>スキル</th>
       <td>
         <div id="skillButton" class="btn btn-primary" style="width:100%;">

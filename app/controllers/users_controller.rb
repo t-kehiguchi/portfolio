@@ -157,6 +157,14 @@ class UsersController < ApplicationController
           end
         end
       end
+      ## 参画終了予定日
+      @latestJoinInfo = ProjectMember.where(employee_number: params["user"]["employee_number"]).order(start_date: "DESC").limit(1)
+      if @latestJoinInfo.present?
+        endDate = params["user"]["join_end_date"].present? ? params["user"]["join_end_date"] : nil
+        unless @latestJoinInfo.update_all(end_date: params["user"]["join_end_date"])
+          flag = false
+        end
+      end
       if flag
         flash.now[:success] = @user.name + 'さんの情報更新しました。'
         redirect_to root_url
@@ -167,6 +175,8 @@ class UsersController < ApplicationController
       @skills = Skill.all
       ## 経歴の長い順に取得
       @possessedSkills = PossessedSkill.where(employee_number: params[:id]).order(month: "DESC")
+      ## 最新の参画情報取得(1レコードのみ)
+      @latestJoinInfo = ProjectMember.where(employee_number: params[:id]).order(start_date: "DESC").limit(1)[0]
     end
   end
 
@@ -204,6 +214,9 @@ class UsersController < ApplicationController
       ## 参画可能日(入力した場合にパラメータ用と表示用で分けている)
       @join_param = params[:joinAbleDate] if params[:joinAbleDate].present?
       @join_display = Date.parse(params[:joinAbleDate]).strftime("%Y年%-m月%-d日 ～") if params[:joinAbleDate].present?
+      ## 参画終了予定日(入力した場合にパラメータ用と表示用で分けている)
+      @join_end_param = params[:joinEndDate] if params[:joinEndDate].present?
+      @join_end_display = Date.parse(params[:joinEndDate]).strftime("～ %Y年%-m月%-d日") if params[:joinEndDate].present?
       ## スキル
       @skillList = []
       params[:skill].each_with_index do |s, index|
