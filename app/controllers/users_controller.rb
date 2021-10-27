@@ -10,8 +10,12 @@ class UsersController < ApplicationController
                 "INNER JOIN project_members ON users.employee_number = project_members.employee_number"]
   ## 参画有無(定数)
   JOIN_OR_NOT = ["無", "有"]
+  ## 性別(定数)
+  GENDER = {"male":"男性", "female":"女性"}
+  ## 就業形態(定数)
+  WORKING_STYLE = {"fullTime":"正社員", "contract":"契約社員", "subcontract":"業務委託"}
   ## Userモデルのパラメータカラム
-  USER_PARAMS = [:employee_number, :name, :department, :birthday, :nearest_station, :telephone_number, :join_able_date, :password]
+  USER_PARAMS = [:employee_number, :name, :gender, :department, :birthday, :nearest_station, :telephone_number, :price_min, :price_max, :working_style, :join_able_date, :description, :password]
 
   def new
     invalidUrl()
@@ -200,6 +204,8 @@ class UsersController < ApplicationController
         flash.now[:danger] = '登録画面か更新画面から遷移してください。'
         redirect_to root_url
       end
+      ## 性別(表示用)
+      @gender_display = GENDER[params[:gender].to_sym]
       ## 誕生日(パラメータ用と表示用で分けている)
       @birthday_param = getConcatThreeItems(
                           params[:birthday_year].to_s, 
@@ -211,6 +217,8 @@ class UsersController < ApplicationController
       @telephone_param = getConcatThreeItems(
                           params[:tel1].to_s, params[:tel2].to_s, 
                             params[:tel3].to_s, '-')
+      ## 就業形態(表示用)
+      @working_style_display = WORKING_STYLE[params[:workingStyle].to_sym]
       ## 参画可能日(入力した場合にパラメータ用と表示用で分けている)
       @join_param = params[:joinAbleDate] if params[:joinAbleDate].present?
       @join_display = Date.parse(params[:joinAbleDate]).strftime("%Y年%-m月%-d日 ～") if params[:joinAbleDate].present?

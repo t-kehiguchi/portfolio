@@ -14,6 +14,11 @@
 
     $(document).ready(function(){
 
+      // 未入力OK(環境、募集人数、備考 etc)の高さ調整
+      if(!$('#tdDescription').text().trim()) { // 備考
+        $('#tdDescription').height($('#thDescription').height());
+      }
+
       // 保持スキルの高さ調整
       $('#thSkill').height($('#tdSkill').height());
 
@@ -34,6 +39,9 @@
             <th>氏名</th>
           </tr>
           <tr>
+            <th>性別</th>
+          </tr>
+          <tr>
             <th>所属</th>
           </tr>
           <tr>
@@ -46,6 +54,12 @@
             <th>最寄り駅</th>
           </tr>
           <tr>
+            <th>希望単価</th>
+          </tr>
+          <tr>
+            <th>就業形態</th>
+          </tr>
+          <tr>
             <th>参画可能日</th>
           </tr>
           <% if params.has_key?(:joinEndDate) %>
@@ -55,6 +69,9 @@
           <% end %>
           <tr>
             <th id="thSkill">スキル</th>
+          </tr>
+          <tr>
+            <th id="thDescription">備考</th>
           </tr>
           <tr>
             <th>パスワード</th>
@@ -74,6 +91,12 @@
             <td style="text-align:left;">
               <%= params[:name] %>
               <%= u.hidden_field :name, value: params[:name] %>
+            </td>
+          </tr>
+          <tr>
+            <td style="text-align:left;">
+              <%= @gender_display %>
+              <%= u.hidden_field :gender, value: params[:gender] %>
             </td>
           </tr>
           <tr>
@@ -98,6 +121,20 @@
             <td style="text-align:left;">
               <%= params[:station] %>
               <%= u.hidden_field :nearest_station, value: params[:station] %>
+            </td>
+          </tr>
+          <tr>
+            <td style="text-align:left;">
+              <%= params[:priceMin].present? ? getPriceDisplay(params[:priceMin].to_i) : "" %>
+                ～ <%= params[:priceMax].present? ? getPriceDisplay(params[:priceMax].to_i) : "" %>
+              <%= u.hidden_field :price_min, value: params[:priceMin] %>
+              <%= u.hidden_field :price_max, value: params[:priceMax] %>
+            </td>
+          </tr>
+          <tr>
+            <td style="text-align:left;">
+              <%= @working_style_display %>
+              <%= u.hidden_field :working_style, value: params[:workingStyle] %>
             </td>
           </tr>
           <tr>
@@ -146,6 +183,12 @@
               <% else %>
                 なし
               <% end %>
+            </td>
+          </tr>
+          <tr>
+            <td id="tdDescription" style="text-align:left;">
+              <%= params[:description] %>
+              <%= u.hidden_field :description, value: params[:description] %>
             </td>
           </tr>
           <tr>

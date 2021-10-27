@@ -3,11 +3,16 @@ User.create!(employee_number:       99999999,
              password:              "password",
              password_confirmation: "password",
              name:                  "代表",
+             gender:                ["male","female"].sample,
              department:            "代表取締役",
              birthday:              "1986-08-08",
              nearest_station:       "東京駅",
              telephone_number:      "012-3456-7890",
+             price_min:             nil,
+             price_max:             nil,
+             working_style:         "fullTime",
              join_able_date:        nil,
+             description:           nil,
              admin_flag:            User.admins['admin'])
 
 # 第一号
@@ -15,22 +20,32 @@ User.create!(employee_number:       11111111,
              password:              "password",
              password_confirmation: "password",
              name:                  "樋口健児",
+             gender:                "male",
              department:            "システム開発",
              birthday:              "1988-05-08",
              nearest_station:       "練馬駅",
              telephone_number:      "090-5496-0563",
-             join_able_date:        "2020-04-01")
+             price_min:             500000,
+             price_max:             1000000,
+             working_style:         "subcontract",
+             join_able_date:        "2020-04-01",
+             description:           nil)
 
 # モルモット第一号
 User.create!(employee_number:       22222222,
              password:              "password",
              password_confirmation: "password",
              name:                  "新人",
+             gender:                ["male","female"].sample,
              department:            "研修生",
              birthday:              "1989-05-25",
              nearest_station:       "谷在家駅",
              telephone_number:      "080-1307-4468",
-             join_able_date:        "2020-04-01")
+             price_min:             500000,
+             price_max:             1000000,
+             working_style:         ["fullTime","contract","subcontract"].sample,
+             join_able_date:        "2020-04-01",
+             description:           nil)
 
 # モルモット第二号以降
 for i in 1..50
@@ -38,11 +53,16 @@ for i in 1..50
                password:              "password",
                password_confirmation: "password",
                name:                  "社員"+i.to_s,
+               gender:                ["male","female"].sample,
                department:            "研修生",
                birthday:              "1988-05-08",
                nearest_station:       "新宿駅",
                telephone_number:      "090-1234-5678",
-               join_able_date:        "2020-04-01")
+               price_min:             500000,
+               price_max:             1000000,
+               working_style:         ["fullTime","contract","subcontract"].sample,
+               join_able_date:        "2020-04-01",
+               description:           nil)
 end
 
 # スキルマスタ
