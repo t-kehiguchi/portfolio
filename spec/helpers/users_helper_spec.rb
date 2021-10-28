@@ -2,6 +2,20 @@ require 'rails_helper'
 
 RSpec.describe UsersHelper, type: :helper do
 
+  describe "単価を金額表示(3桁区切り)にするメソッドについて" do
+    context "単価がある(1000000円)場合" do
+      it "「1,000,000円」が返却されること" do
+        expect(helper.getPriceDisplay(1000000)).to eq "1,000,000円"
+      end
+    end
+    context "単価がない(空文字 or nil)場合" do
+      it "空文字が返却されること" do
+        expect(helper.getPriceDisplay("")).to eq ""
+        expect(helper.getPriceDisplay(nil)).to eq ""
+      end
+    end
+  end
+
   describe "プルダウンを取得するためのMap" do
     it "経験年プルダウン(30年まで)が生成されること" do
       expect(helper.getExpYearMap).to eq(

@@ -1,5 +1,10 @@
 module UsersHelper
 
+  ## 単価を金額表示(3桁区切り)にするメソッド
+  def getPriceDisplay(price)
+    return price.present? ? price.to_s(:delimited).concat("円") : ""
+  end
+
   ## 年プルダウンを取得するためのMap
   def getYearMap
     hash = {}
