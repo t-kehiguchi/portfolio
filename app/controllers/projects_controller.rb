@@ -33,7 +33,7 @@ class ProjectsController < ApplicationController
         end
       end
       if flag
-        flash.now[:success] = '案件「' + @project.project_name + '」の情報を登録しました。'
+        flash[:success] = '案件「' + @project.project_name + '」の情報を登録しました。'
         redirect_to projects_url
       end
     else
@@ -67,7 +67,7 @@ class ProjectsController < ApplicationController
         flag = false
       end
       if flag
-        flash.now[:success] = '案件「' + @project.project_name + '」の情報更新しました。'
+        flash[:success] = '案件「' + @project.project_name + '」の情報更新しました。'
         redirect_to projects_url
       end
     else
@@ -86,7 +86,7 @@ class ProjectsController < ApplicationController
     return if response_body ## 一般ユーザーのみ強制リダイレクト
     ## 登録画面か更新画面からの遷移ではない場合は
     unless request.referer or params[:name].present?
-      flash.now[:danger] = '登録画面か更新画面から遷移してください。'
+      flash[:danger] = '登録画面か更新画面から遷移してください。'
       redirect_to root_url
     else
       ## 遷移元の情報を取得
@@ -95,7 +95,7 @@ class ProjectsController < ApplicationController
       @actionName = path[:action]
       ## 登録画面か更新画面からの遷移ではない場合は
       unless @actionName == 'new' or @actionName == 'edit'
-        flash.now[:danger] = '登録画面か更新画面から遷移してください。'
+        flash[:danger] = '登録画面か更新画面から遷移してください。'
         redirect_to root_url
       end
       ## 開始日(パラメータ用と表示用で分けている)
@@ -248,12 +248,12 @@ class ProjectsController < ApplicationController
       if user
         unless current_user.admin_flag
           unless user.employee_number == current_user.employee_number
-            flash.now[:danger] = '一般ユーザーが他人のユーザーの情報にアクセスできません。'
+            flash[:danger] = '一般ユーザーが他人のユーザーの情報にアクセスできません。'
             redirect_to root_url
           end
         end
       elsif !current_user.admin_flag
-        flash.now[:danger] = '管理者以外のユーザーはアクセスできません。'
+        flash[:danger] = '管理者以外のユーザーはアクセスできません。'
         redirect_to root_url
       end
     end
