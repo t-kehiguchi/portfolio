@@ -15,6 +15,8 @@ Rails.application.routes.draw do
   get    'users/search' , to: 'users#search'
   post   'users/search',  to: 'users#search', as: 'user_search'
   get    'users/:id/matching' , to: 'users#matching', as: 'user_matching'
+  post   'users/upload' , to: 'users#upload'
+  post   'users/:id/download' , to: 'users#download', as: 'user_download'
   get    'projects' , to: 'projects#index', as: 'projects'
   get    'projects/new' , to: 'projects#new'
   post   'projects/new' , to: 'projects#new', as: 'project_new'

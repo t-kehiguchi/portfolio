@@ -14,11 +14,16 @@
     $('#thSkill').height($('td#tdSkill').height()+10);
     // お気に入り案件の高さ調整(プラスPadding10px分も)
     $('#thFavoriteProject').height($('td#tdFavoriteProject').height()+10);
+    // スキルシートの高さ調整
+    $('#thSkillSheet').height($('td#tdSkillSheet').height());
 
     // 未入力OK(備考)の高さ調整
     if(!$('#tdDescription').text().trim()) { // 備考
       $('#tdDescription').height($('#thDescription').height());
     }
+
+    // 「アップロード」ボタンの初期表示は非活性
+    $('#upload').attr('disabled', true);
 
     // スキルアイコンを触れると経験年数吹き出しが出る
     $("#tdSkill div").hover(
@@ -56,6 +61,42 @@
       $('#thFavoriteProject').height($('td#tdFavoriteProject').height()+10);
       count++;
     });
+
+    // ファイル(PDF or xls or xlsx形式)選択された場合に「アップロード」ボタンが活性化するメソッド
+    $('[name=skillSheet]').change(function() {
+      if(!$.isEmptyObject($(this).val())) {
+        $('#upload').attr('disabled', false);
+      } else {
+        // 「PDF or xls or xlsx」形式のファイル選択後に「キャンセル」ボタン押下した場合
+        $('#upload').attr('disabled', true);
+      }
+    });
+
+    // 「アップロード」ボタンを押下した場合の処理
+    $('#upload').click(function(){
+      // 活性化のみ
+      if(!$(this).attr('disabled')) {
+        var formData = new FormData($('#uploadForm').get(0));
+        var employeeNumber = location.pathname.split('/')[2]; // 「/users/社員番号/detail」の2番目を取得
+        formData.append("id", employeeNumber);
+        upload(formData);
+      }
+    });
+
+    // ファイルオブジェクトをもとにファイルアップロード処理を呼び出すメソッド
+    function upload(formData) {
+      $.ajax({
+        url : '/users/upload',
+        type: 'POST',
+        data: formData,
+        processData: false,
+        contentType: false,
+        dataType: 'json'
+      }).done(function(data){
+        location.reload(); // アップロード成功しても失敗しても「エンジニア詳細」画面をリロード
+        $('html,body').animate({ scrollTop: 0 }, '1'); // スクロールトップへ移動
+      });
+    }
 
   })
 
@@ -107,6 +148,9 @@
         </tr>
         <tr>
           <th id="thFavoriteProject">お気に入り案件</th>
+        </tr>
+        <tr>
+          <th id="thSkillSheet">スキルシート</th>
         </tr>
       <% end %>
       <tr>
@@ -206,6 +250,18 @@
           <% else %>
             <td style="text-align:left;">なし</td>
           <% end %>
+        </tr>
+        <tr>
+          <td id="tdSkillSheet" style="text-align:left;">
+            <% if @skillSheetInfo.present? %>
+              <%= link_to @skillSheetInfo.file_name, user_download_path(@user.employee_number), method: :post %>
+            <% else %>
+              <form id="uploadForm">
+                <input type="file" id="skillSheet" name="skillSheet" accept=".xls,.xlsx,.pdf" style="height:30px; margin-bottom:0px;">
+                <div id="upload" class="btn btn-primary" style="width:25%; margin-top:5px;">アップロード</div>
+              </form>
+            <% end %>
+          </td>
         </tr>
       <% end %>
       <tr>

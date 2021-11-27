@@ -1,3 +1,5 @@
+require 'securerandom'
+
 class UsersController < ApplicationController
 
   ## 検索結果
@@ -246,6 +248,8 @@ class UsersController < ApplicationController
     @join = ProjectMember.where("employee_number = ? AND (end_date is null OR #{Date.today.strftime("%Y-%m-%d")} <= end_date)", params[:id]).order(start_date: "DESC").first
     ## お気に入り案件(チェックした順)
     @favoriteProjects = ProjectMatching.where(employee_number: params[:id]).order(created_at: "ASC").pluck(:project_id, :created_employee_number)
+    ## スキルシート情報(最近アップロードした情報を1レコード取得)
+    @skillSheetInfo = SkillSheet.where(employee_number: params[:id]).order(created_at: "DESC").first
   end
 
   def index
@@ -407,6 +411,74 @@ class UsersController < ApplicationController
     @skillMatchInfos = skillMatchInfo(userSkills).delete_if {|key, value| value[0].to_i < 1}.to_a.paginate(page: params[:page], per_page: 10)
     ## お気に入り案件
     @favoriteProjects = ProjectMatching.where(employee_number: params[:id]).pluck(:project_id)
+  end
+
+  def upload
+    ## ファイルアップロード処理(begin-rescue)
+    begin
+      upload_file_name = params[:skillSheet].original_filename
+      ## ディレクトリ
+      upload_dir = Rails.root.join("public", params[:id].to_s)
+      ## フォルダ作成(存在しない場合のみ)
+      FileUtils.mkdir_p(upload_dir) unless File.exists?(upload_dir)
+      ## アップロードするファイルのフルパス
+      upload_file_path = upload_dir + upload_file_name
+      ## アップロードファイルの書き込み(一時フォルダのファイルから格納先へコピーで対応)
+      FileUtils.cp(params[:skillSheet].tempfile, upload_file_path)
+    rescue => e
+      puts e.class
+      flash[:danger] = 'ファイルアップロード失敗しました。'
+      return
+    end
+    ## スキルシートテーブルに保存する処理
+    flag = true
+    ## file_id生成(英数字ランダム8桁)
+    file_id = SecureRandom.alphanumeric(8)
+    ## 対象の社員番号に紐づくスキルシートテーブルのレコードが存在する場合は全件削除
+    skillSheetTemp = SkillSheet.where(employee_number: params[:id])
+    skillSheetTemp.delete_all if skillSheetTemp.present?
+    ## スキルシートテーブルのレコード追加
+    @skillSheet = SkillSheet.new(file_id: file_id, employee_number: params[:id], file_name: upload_file_name)
+    unless @skillSheet.save
+      flag = false
+    end
+    if flag
+      flash[:success] = 'ファイル名「' + upload_file_name + '」' + 'アップロード完了しました。'
+    else
+      flash[:danger] = 'ファイルアップロード失敗しました。'
+    end
+  end
+
+  def download
+    ## ファイル名取得
+    skill_sheet = SkillSheet.where(employee_number: params[:id])
+    ## 空か2件以上の場合はエラー
+    if skill_sheet.empty? or skill_sheet.count > 1
+      user = User.find(params[:id])
+      flash[:danger] = 'スキルシート情報が0件か複数件存在します。'
+      return redirect_back(fallback_location: user_detail_path(user))
+    end
+    ## 対象ディレクトリ
+    upload_dir = Rails.root.join("public", params[:id].to_s)
+    ## ダウンロードするファイルのフルパス
+    file_name = skill_sheet.first.file_name
+    upload_file_path = upload_dir + file_name
+    ## アップロード先のファイルが存在しない場合もエラー
+    unless File.exists?(upload_file_path)
+      user = User.find(params[:id])
+      flash[:danger] = '対象のファイルが削除されたかファイル名に相違があります。'
+      return redirect_back(fallback_location: user_detail_path(user))
+    end
+    ## ファイル種類(拡張子で決定)
+    type = file_name.end_with?(".xlsx") ? "application/xlsx" : file_name.end_with?(".xls") ? "application/xls" : "application/pdf"
+    begin
+      ## ダウンロード
+      send_file(upload_file_path, filename: file_name, type: type)
+    rescue => e
+      puts e.class
+      flash[:danger] = 'ダウンロード失敗しました。'
+      return redirect_back(fallback_location: user_detail_path(user))      
+    end
   end
 
   private
