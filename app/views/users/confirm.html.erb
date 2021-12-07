@@ -15,8 +15,8 @@
     $(document).ready(function(){
 
       // 未入力OK(環境、募集人数、備考 etc)の高さ調整
-      if(!$('#tdDescription').text().trim()) { // 備考
-        $('#tdDescription').height($('#thDescription').height());
+      if($('#tdDescription').text().trim()) { // 備考
+        $('#thDescription').height($('#tdDescription').height());
       }
 
       // 保持スキルの高さ調整
@@ -186,7 +186,7 @@
             </td>
           </tr>
           <tr>
-            <td id="tdDescription" style="text-align:left;">
+            <td id="tdDescription" style="text-align:left; white-space:pre-line;">
               <%= params[:description] %>
               <%= u.hidden_field :description, value: params[:description] %>
             </td>

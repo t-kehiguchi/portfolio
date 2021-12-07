@@ -14,15 +14,18 @@
 
   $(document).ready(function(){
 
-    // 未入力OK(環境、募集人数、備考 etc)の高さ調整
-    if(!$('#tdEnvironment').text().trim()) { // 環境
-      $('#tdEnvironment').height($('#thEnvironment').height());
+    // 未入力OK(案件内容、環境、募集人数、備考 etc)の高さ調整
+    if($('#tdEnvironment').text().trim()) { // 案件内容
+      $('#thContent').height($('#tdContent').height());
+    }
+    if($('#tdEnvironment').text().trim()) { // 環境
+      $('#thEnvironment').height($('#tdEnvironment').height());
     }
     if(!$('#tdApplicantNum').text().trim()) { // 募集人数
       $('#tdApplicantNum').height($('#thApplicantNum').height());
     }
-    if(!$('#tdDescription').text().trim()) { // 備考
-      $('#tdDescription').height($('#thDescription').height());
+    if($('#tdDescription').text().trim()) { // 備考
+      $('#thDescription').height($('#tdDescription').height());
     }
 
     // 保持スキルの高さ調整
@@ -49,7 +52,7 @@
             <th>案件名</th>
           </tr>
           <tr>
-            <th>案件内容</th>
+            <th id="thContent">案件内容</th>
           </tr>
           <tr>
             <th id="thEnvironment">環境</th>
@@ -105,13 +108,13 @@
             </td>
           </tr>
           <tr>
-            <td style="text-align:left;">
+            <td id="tdContent" style="text-align:left; white-space:pre-line;">
               <%= params[:content] %>
               <%= u.hidden_field :content, value: params[:content] %>
             </td>
           </tr>
           <tr>
-            <td id="tdEnvironment" style="text-align:left;">
+            <td id="tdEnvironment" style="text-align:left; white-space:pre-line;">
               <%= params[:environment] %>
               <%= u.hidden_field :environment, value: params[:environment] %>
             </td>
@@ -171,7 +174,7 @@
             </td>
           </tr>
           <tr>
-            <td id="tdDescription" style="text-align:left;">
+            <td id="tdDescription" style="text-align:left; white-space:pre-line;">
               <%= params[:description] %>
               <%= u.hidden_field :description, value: params[:description] %>
             </td>
