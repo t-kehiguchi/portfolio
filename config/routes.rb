@@ -31,6 +31,7 @@ Rails.application.routes.draw do
   namespace 'api' do
     namespace 'v1' do
       post   'users/search',  to: 'users#search', as: 'user_search'
+      get    'users/favorite',  to: 'users#favorite'
       post   'users/favorite',  to: 'users#favorite', as: 'user_favorite'
       post   'projects/search',  to: 'projects#search', as: 'project_search'
     end

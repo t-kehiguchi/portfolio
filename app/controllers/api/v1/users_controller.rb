@@ -93,6 +93,12 @@ module Api
             @projectMatching = ProjectMatching.where(project_id: params[:project_id], employee_number: params[:employee_number])
             @projectMatching.delete_all
           end
+        else
+          ## それ以外(Getメソッド)の場合はエンジニア一覧 or エンジニア詳細画面 or ログイン画面へ遷移
+          ## ログイン時のみユーザー情報取得
+          user = User.find(current_user.employee_number) if current_user.present?
+          flash[:danger] = '不正なリクエストです。'
+          redirect_to root_url user
         end
       end
 
