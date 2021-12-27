@@ -153,9 +153,9 @@
 
   <input type="hidden" name="projectId" value="<%= @project_id %>">
 
-  <table id="new" style="margin-top:75px;">
+  <table id="new">
     <tr>
-      <th style="width:250px;">案件ID</th>
+      <th id="projectId">案件ID</th>
       <td style="text-align:left; font-size:25px; font-weight:700;"><%= @project_id %></td>
     </tr>
     <tr>
@@ -210,9 +210,9 @@
       </th>
       <td>
         <div>
-          <%= f.text_field :priceMin, class: 'form-control', :id=>"priceMin", :style=>"width:20%; float: left;" %>
+          <%= f.text_field :priceMin, class: 'form-control', :id=>"priceMin", :style=>"float: left;" %>
           <p id="price">円　～　</p>
-          <%= f.text_field :priceMax, class: 'form-control', :id=>"priceMax", :style=>"width:20%; float: left;" %>
+          <%= f.text_field :priceMax, class: 'form-control', :id=>"priceMax", :style=>"float: left;" %>
           <p id="price">円</p>
         </div>
       </td>
@@ -226,9 +226,9 @@
       </th>
       <td>
         <div>
-          <%= f.text_field :hourMin, class: 'form-control', :id=>"hourMin", :style=>"width:10%; float: left;" %>
+          <%= f.text_field :hourMin, class: 'form-control', :id=>"hourMin", :style=>"float: left;" %>
           <p id="time">H　～　</p>
-          <%= f.text_field :hourMax, class: 'form-control', :id=>"hourMax", :style=>"width:10%; float: left;" %>
+          <%= f.text_field :hourMax, class: 'form-control', :id=>"hourMax", :style=>"float: left;" %>
           <p id="time">H</p>
         </div>
       </td>
@@ -263,19 +263,19 @@
       <td>
         <div>
           <%= f.collection_select :time_from_hour, getHourMap, :first, :last,
-            { include_blank: true, selected: "" }, class: 'form-control',
+            { include_blank: true, selected: "" }, class: 'form-control', id: 'time_from_hour',
               :style=>"float:left; margin-bottom:0px; width:15%;" %>
             <p id="time"> ： </p>
           <%= f.collection_select :time_from_minites, getMinutesMap, :first, :last,
-            { include_blank: true, selected: "" }, class: 'form-control',
+            { include_blank: true, selected: "" }, class: 'form-control', id: 'time_from_minites',
               :style=>"float:left; margin-bottom:0px; width:15%;" %>
             <p id="time"> ～ </p>
           <%= f.collection_select :time_to_hour, getHourMap, :first, :last,
-            { include_blank: true, selected: "" }, class: 'form-control',
+            { include_blank: true, selected: "" }, class: 'form-control', id: 'time_to_hour',
               :style=>"float:left; margin-bottom:0px; width:15%;" %>
             <p id="time"> ： </p>
           <%= f.collection_select :time_to_minites, getMinutesMap, :first, :last,
-            { include_blank: true, selected: "" }, class: 'form-control',
+            { include_blank: true, selected: "" }, class: 'form-control', id: 'time_to_minites',
               :style=>"float:left; margin-bottom:0px; width:15%;" %>
         </div>
       </td>

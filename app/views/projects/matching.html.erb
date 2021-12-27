@@ -74,12 +74,12 @@
 </script>
 
 <div>
-  <h3>案件「<%= Project.find(params[:id]).project_name %>」の案件マッチング</h3>
+  <h3 style="word-break:break-all;">案件「<%= Project.find(params[:id]).project_name %>」の案件マッチング</h3>
 </div>
 <div>
   <h3 style="margin-bottom:0px;">
     案件開始日 : <%= Date.parse(Project.find(params[:id]).start_date).strftime("%Y年%-m月%-d日") %>
-    <select class="form-control" id="dispCondition" style="width:27.5%; float:right;"></select>
+    <select class="form-control" id="dispCondition" style="float:right;"></select>
   </h3>
 </div>
 

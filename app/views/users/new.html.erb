@@ -124,7 +124,7 @@
     }
   }
 
-　// スキル追加ボタン
+  // スキル追加ボタン
   $(function(){
     $("#skillButton").on("click", function() {
       $(this).next().slideToggle();
@@ -166,9 +166,9 @@
 
   <input type="hidden" name="employeeNumber" value="<%= @employee_number %>">
 
-  <table id="new" style="margin-top:75px;">
+  <table id="new">
     <tr>
-      <th style="width:250px;">社員番号</th>
+      <th id="employeeNumber">社員番号</th>
       <td style="text-align:left; font-size:25px; font-weight:700;"><%= @employee_number %></td>
     </tr>
     <tr>
@@ -217,16 +217,16 @@
       <td>
         <div>
           <%= f.collection_select :birthday_year, getYearMap, :first, :last,
-            { include_blank: true, selected: "" }, class: 'form-control', 
-              :style=>"float:left; margin-bottom:0px; width:15%;" %>
+            { include_blank: true, selected: "" }, class: 'form-control', :id=>"birthday_year",
+              :style=>"float:left; margin-bottom:0px;" %>
             <p id="birth"> 年 </p>
           <%= f.collection_select :birthday_month, getMonthMap, :first, :last,
-            { include_blank: true, selected: "" }, class: 'form-control', 
-              :style=>"float:left; margin-bottom:0px; width:15%;" %>
+            { include_blank: true, selected: "" }, class: 'form-control', :id=>"birthday_month",
+              :style=>"float:left; margin-bottom:0px;" %>
             <p id="birth"> 月 </p>
           <%= f.collection_select :birthday_day, getDayMap, :first, :last,
-            { include_blank: true, selected: "" }, class: 'form-control', 
-              :style=>"float:left; margin-bottom:0px; width:15%;" %>
+            { include_blank: true, selected: "" }, class: 'form-control', :id=>"birthday_day",
+              :style=>"float:left; margin-bottom:0px;" %>
             <p id="birth"> 日 </p>
         </div>
       </td>
@@ -252,11 +252,11 @@
       </th>
       <td>
         <div>
-          <%= f.text_field :tel1, class: 'form-control', :id=>"tel1", :style=>"width:10%; float: left;" %>
+          <%= f.text_field :tel1, class: 'form-control', :id=>"tel1", :style=>"float: left;" %>
             <p id="tel"> - </p>
-          <%= f.text_field :tel2, class: 'form-control', :id=>"tel2", :style=>"width:10%; float: left;" %>
+          <%= f.text_field :tel2, class: 'form-control', :id=>"tel2", :style=>"float: left;" %>
             <p id="tel"> - </p>
-          <%= f.text_field :tel3, class: 'form-control', :id=>"tel3", :style=>"width:10%; float: left;" %>
+          <%= f.text_field :tel3, class: 'form-control', :id=>"tel3", :style=>"float: left;" %>
         </div>
       </td>
     </tr>
@@ -268,9 +268,9 @@
       </th>
       <td>
         <div>
-          <%= f.text_field :priceMin, class: 'form-control', :id=>"priceMin", :style=>"width:20%; float: left;" %>
+          <%= f.text_field :priceMin, class: 'form-control', :id=>"priceMin", :style=>"float: left;" %>
           <p id="price">円　～　</p>
-          <%= f.text_field :priceMax, class: 'form-control', :id=>"priceMax", :style=>"width:20%; float: left;" %>
+          <%= f.text_field :priceMax, class: 'form-control', :id=>"priceMax", :style=>"float: left;" %>
           <p id="price">円</p>
         </div>
       </td>
@@ -319,19 +319,19 @@
               <td>
                 <%= f.collection_select "skill[]", @skills, :skill_id, :skill_name,
                   { include_blank: true, selected: "" }, class: 'form-control', 
-                    :style=>"float:left; margin-bottom:0px; width:50%;" %>
+                    :style=>"float:left; margin-bottom:0px;" %>
               </td>
             </tr>
             <tr>
               <th>経験年数</th>
               <td id="exp">
                 <%= f.collection_select "exp_year[]", getExpYearMap, :first, :last,
-                  { include_blank: true, selected: "" }, class: 'form-control', 
-                    :style=>"float:left; margin-bottom:0px; width:15%;" %>
+                  { include_blank: true, selected: "" }, class: 'form-control', :id=>"exp_year",
+                    :style=>"float:left; margin-bottom:0px;" %>
                 <p id="birth"> 年 </p>
                 <%= f.collection_select "exp_month[]", getExpMonthMap, :first, :last,
-                  { include_blank: true, selected: "" }, class: 'form-control', 
-                    :style=>"float:left; margin-bottom:0px; width:15%;" %>
+                  { include_blank: true, selected: "" }, class: 'form-control', :id=>"exp_month",
+                    :style=>"float:left; margin-bottom:0px;" %>
                 <p id="birth"> ヶ月 </p>
                 <div id="del" class="btn btn-danger" disabled="disabled">削除</div>
               </td>

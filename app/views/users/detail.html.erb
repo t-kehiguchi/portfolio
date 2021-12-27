@@ -105,7 +105,7 @@
 <h3>エンジニア詳細</h3>
 
 <div style="margin-top:30px; margin-left:auto; margin-right:auto; display:table;">
-  <table class="table-bordered table-condensed" style="float:left; width:400px;">
+  <table class="table-bordered table-condensed engineer-detail-left">
     <tbody>
       <tr>
         <th>社員番号</th>
@@ -161,7 +161,7 @@
     </tbody>
   </table>
 
-  <table class = "table-bordered table-condensed" style="float:left; width:500px;">
+  <table class = "table-bordered table-condensed engineer-detail-right">
     <tbody>
       <tr>
         <td style="text-align:left;"><%= @user.employee_number %></td>
@@ -262,7 +262,7 @@
             <% else %>
               <form id="uploadForm">
                 <input type="file" id="skillSheet" name="skillSheet" accept=".xls,.xlsx,.pdf" style="height:30px; margin-bottom:0px;">
-                <div id="upload" class="btn btn-primary" style="width:25%; margin-top:5px;">アップロード</div>
+                <div id="upload" class="btn btn-primary" style="margin-top:5px;">アップロード</div>
               </form>
             <% end %>
           </td>

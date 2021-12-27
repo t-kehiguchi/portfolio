@@ -50,9 +50,9 @@
     <% @skillMatchInfos.each do |skillMatchInfo| %>
       <tr style="height:50px;">
         <% @project = Project.find(skillMatchInfo[0]) %>
-        <td id="projectId" style="width:15%;"><%= link_to skillMatchInfo[0], project_detail_path(skillMatchInfo[0]) %></td>
+        <td id="projectId"><%= link_to skillMatchInfo[0], project_detail_path(skillMatchInfo[0]) %></td>
         <td id="name"><%= @project.project_name %></td>
-        <td style="width:15%;"><%= Date.parse(@project.start_date).strftime("%Y年%-m月%-d日　～") %></td>
+        <td id="startDate"><%= Date.parse(@project.start_date).strftime("%Y年%-m月%-d日　～") %></td>
         <td id="matchingSkills">
           <% skillMatchInfo[1][1].each do |matchingSkillId| %>
             <div class="btn btn-primary btn-sm" style="margin-right:10px; cursor:default;">

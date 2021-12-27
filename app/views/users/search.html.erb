@@ -136,10 +136,10 @@
 
   <%= f.label "参画有無" %>
   <%= f.collection_select :joinOrNot, ["無","有"], :first, :last,
-    { include_blank: true, selected: "" }, class: 'form-control', :style=>"width:25%;" %>
+    { include_blank: true, selected: "" }, class: 'form-control user_search_joinOrNot' %>
 
   <%= f.label "参画終了予定日" %>
-  <%= f.date_field :joinEndDate, class: 'form-control', :style=>"width:25%;" %>
+  <%= f.date_field :joinEndDate, class: 'form-control user_search_joinEndDate' %>
 
   <div style="margin-top:50px;">
     <p id="count" style="float:left; font-weight:700; font-size:25px; color:#f0ad4e;"><%= @count %></p>
