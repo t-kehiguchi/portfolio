@@ -104,15 +104,9 @@ class ProjectsController < ApplicationController
       ## 終了予定日(入力した場合にパラメータ用と表示用で分けている)
       @end_param = params[:projectEndDate] if params[:projectEndDate].present?
       @end_display = Date.parse(params[:projectEndDate]).strftime("～ %Y年%-m月%-d日") if params[:projectEndDate].present?
-      ## 時間(入力した場合にパラメータ用と表示用で分けている)
-      if params[:time_from_hour].present? and params[:time_from_minites].present? and params[:time_to_hour].present? and params[:time_to_minites].present?
-        @startTime = getConcatTwoItems(
-                        format("%02d",params[:time_from_hour]),
-                          format("%02d",params[:time_from_minites]), ':')
-        @endTime   = getConcatTwoItems(
-                        format("%02d",params[:time_to_hour]),
-                          format("%02d",params[:time_to_minites]), ':')
-      end
+      ## 時間
+      @startTime = params[:time_from]
+      @endTime   = params[:time_to]
       ## スキル(重複している可能性がある、尚可スキルは選択されていない場合はある)
       @must = params[:mustSkill].uniq
       @want = params[:wantSkill] ? params[:wantSkill].uniq : nil
@@ -271,11 +265,6 @@ class ProjectsController < ApplicationController
     ## 最新の案件IDの連番を取得
     def getNewestProjectId(projectId)
       return format("-%02d", (projectId[projectId.index("-")+1..].to_i+1).to_s)
-    end
-
-    ## 2項目から1つの項目に連結した文字列を返す
-    def getConcatTwoItems(first, second, moji)
-      return first + moji + second
     end
 
     ## 3項目から1つの項目に連結した文字列を返す

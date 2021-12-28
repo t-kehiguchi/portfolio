@@ -40,13 +40,14 @@
       validationCheck = false;
     }
     // 時間
-    var timeFromHour = $('[name=time_from_hour] option:selected').val();
-    var timeFromMinutes = $('[name=time_from_minites] option:selected').val();
-    var timeToHour = $('[name=time_to_hour] option:selected').val();
-    var timeToMinutes = $('[name=time_to_minites] option:selected').val();
-    // 時間はすべて空かすべて入力されている以外の場合はNG
-    twoCheck(timeFromHour, timeFromMinutes, "時間(From)");
-    twoCheck(timeToHour, timeToMinutes, "時間(To)");
+    var timeFrom = $('#timeFrom').val();
+    var timeTo = $('#timeTo').val();
+    // 時間From
+    var timeFromHour = timeFrom ? timeFrom.substr(0, timeFrom.indexOf(':')) : '';
+    var timeFromMinutes = timeFrom ? timeFrom.substr(timeFrom.indexOf(':')+1, timeFrom.length) : '';
+    // 時間To
+    var timeToHour = timeTo ? timeTo.substr(0, timeTo.indexOf(':')) : '';
+    var timeToMinutes = timeTo ? timeTo.substr(timeTo.indexOf(':')+1, timeTo.length) : '';
     // 必須スキル(少なくとも1つは必要)
     if($('#mustSkill .btn').length < 1) {
       alert("必須スキルは必ず選択してください");
@@ -67,27 +68,17 @@
     // 2個の項目(例えば単価や精算幅)チェック
     function twoCheck(value1, value2, name) {
 
-      if(name.indexOf('時間') != -1) {
-        // 両方入力か両方未入力以外NG
-        if((value1 != '' && value1 != null) && (value2 != '' && value2 != null)) {
-        } else if((value1 == '' || value1 == null) && (value2 == '' || value2 == null)) {
-        } else {
-          alert(name + "はすべて空かすべて入力されているかにしてください。");
-          validationCheck = false;
+      // 念のため数値変換
+      value1 = value1-0; value2 = value2-0;
+      if(value1 > value2) {
+        if(name == "単価") {
+          alert(name + "は以下のように入力してください。\n"
+                  + value2 + " 円　～　 " + value1 + " 円");
+        } else if (name == "精算幅") {
+          alert(name + "は以下のように入力してください。\n"
+                  + value2 + " H　～　 " + value1 + " H");
         }
-      } else {
-        // 念のため数値変換
-        value1 = value1-0; value2 = value2-0;
-        if(value1 > value2) {
-          if(name == "単価") {
-            alert(name + "は以下のように入力してください。\n"
-                    + value2 + " 円　～　 " + value1 + " 円");
-          } else if (name == "精算幅") {
-            alert(name + "は以下のように入力してください。\n"
-                    + value2 + " H　～　 " + value1 + " H");
-          }
-          validationCheck = false;
-        }
+        validationCheck = false;
       }
     }
 
@@ -262,21 +253,9 @@
       </th>
       <td>
         <div>
-          <%= f.collection_select :time_from_hour, getHourMap, :first, :last,
-            { include_blank: true, selected: "" }, class: 'form-control', id: 'time_from_hour',
-              :style=>"float:left; margin-bottom:0px; width:15%;" %>
-            <p id="time"> ： </p>
-          <%= f.collection_select :time_from_minites, getMinutesMap, :first, :last,
-            { include_blank: true, selected: "" }, class: 'form-control', id: 'time_from_minites',
-              :style=>"float:left; margin-bottom:0px; width:15%;" %>
+          <%= f.time_field :time_from, class: 'form-control', :style=>"width:40%; float:left;" %>
             <p id="time"> ～ </p>
-          <%= f.collection_select :time_to_hour, getHourMap, :first, :last,
-            { include_blank: true, selected: "" }, class: 'form-control', id: 'time_to_hour',
-              :style=>"float:left; margin-bottom:0px; width:15%;" %>
-            <p id="time"> ： </p>
-          <%= f.collection_select :time_to_minites, getMinutesMap, :first, :last,
-            { include_blank: true, selected: "" }, class: 'form-control', id: 'time_to_minites',
-              :style=>"float:left; margin-bottom:0px; width:15%;" %>
+          <%= f.time_field :time_to, class: 'form-control', :style=>"width:40%;"  %>
         </div>
       </td>
     </tr>
