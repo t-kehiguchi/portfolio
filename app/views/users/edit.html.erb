@@ -27,6 +27,8 @@
       && ($('#priceMax').val() != '' && $('#priceMax').val() != null)) {
       twoCheck($('#priceMin').val(), $('#priceMax').val(), "希望単価");
     }
+    // 就業形態
+    oneCheck($('select[name="workingStyle"]').val(), "就業形態");
     // パスワード
     if($('input[name="passwordFlg"]').length) {
       // パスワード
