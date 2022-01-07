@@ -417,14 +417,19 @@ class UsersController < ApplicationController
     ## ファイルアップロード処理(begin-rescue)
     begin
       upload_file_name = params[:skillSheet].original_filename
-      ## ディレクトリ
-      upload_dir = Rails.root.join("public", params[:id].to_s)
-      ## フォルダ作成(存在しない場合のみ)
-      FileUtils.mkdir_p(upload_dir) unless File.exists?(upload_dir)
-      ## アップロードするファイルのフルパス
-      upload_file_path = upload_dir + upload_file_name
-      ## アップロードファイルの書き込み(一時フォルダのファイルから格納先へコピーで対応)
-      FileUtils.cp(params[:skillSheet].tempfile, upload_file_path)
+      if Rails.env.production? ## 本番(ステージング)環境
+        client = Aws::S3::Client.new(:region => ENV['AWS_S3_REGION'], :access_key_id => ENV['AWS_ACCESS_KEY_ID'], :secret_access_key => ENV['AWS_SECRET_ACCESS_KEY']) ## リージョン「東京」
+        client.put_object(bucket: ENV['S3_BUCKET_NAME'], key: params[:id].to_s + '/' + upload_file_name, body: upload_file_name.read) 
+      else ## 開発環境
+        ## ディレクトリ
+        upload_dir = Rails.root.join("public", params[:id].to_s)
+        ## フォルダ作成(存在しない場合のみ)
+        FileUtils.mkdir_p(upload_dir) unless File.exists?(upload_dir)
+        ## アップロードするファイルのフルパス
+        upload_file_path = upload_dir + upload_file_name
+        ## アップロードファイルの書き込み(一時フォルダのファイルから格納先へコピーで対応)
+        FileUtils.cp(params[:skillSheet].tempfile, upload_file_path)
+      end
     rescue => e
       puts e.class
       flash[:danger] = 'ファイルアップロード失敗しました。'
@@ -472,8 +477,14 @@ class UsersController < ApplicationController
     ## ファイル種類(拡張子で決定)
     type = file_name.end_with?(".xlsx") ? "application/xlsx" : file_name.end_with?(".xls") ? "application/xls" : "application/pdf"
     begin
-      ## ダウンロード
-      send_file(upload_file_path, filename: file_name, type: type)
+      if Rails.env.production? ## 本番(ステージング)環境
+        client = Aws::S3::Client.new(:region => ENV['AWS_S3_REGION'], :access_key_id => ENV['AWS_ACCESS_KEY_ID'], :secret_access_key => ENV['AWS_SECRET_ACCESS_KEY']) ## リージョン「東京」
+        data = client.get_object(:bucket => ENV['S3_BUCKET_NAME'], :key => params[:id].to_s + '/' + file_name).body
+        send_data data.read, filename: file_name, disposition: 'attachment',  type: type
+      else ## 開発環境
+        ## ダウンロード
+        send_file(upload_file_path, filename: file_name, type: type)
+      end
     rescue => e
       puts e.class
       flash[:danger] = 'ダウンロード失敗しました。'

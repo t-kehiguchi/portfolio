@@ -19,6 +19,7 @@ gem 'jbuilder',                '2.7.0'
 gem 'roo'
 gem 'mysql2'
 gem 'coffee-script-source',    '1.8.0'
+gem 'aws-sdk'
 
 group :development, :test do
   gem 'dotenv-rails'
