@@ -419,7 +419,7 @@ class UsersController < ApplicationController
       upload_file_name = params[:skillSheet].original_filename
       if Rails.env.production? ## 本番(ステージング)環境
         client = Aws::S3::Client.new(:region => ENV['AWS_S3_REGION'], :access_key_id => ENV['AWS_ACCESS_KEY_ID'], :secret_access_key => ENV['AWS_SECRET_ACCESS_KEY']) ## リージョン「東京」
-        client.put_object(bucket: ENV['S3_BUCKET_NAME'], key: params[:id].to_s + '/' + upload_file_name, body: upload_file_name.read) 
+        client.put_object(bucket: ENV['S3_BUCKET_NAME'], key: params[:id].to_s + '/' + upload_file_name, body: params[:skillSheet].tempfile.read)
       else ## 開発環境
         ## ディレクトリ
         upload_dir = Rails.root.join("public", params[:id].to_s)
