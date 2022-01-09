@@ -463,13 +463,19 @@ class UsersController < ApplicationController
       flash[:danger] = 'スキルシート情報が0件か複数件存在します。'
       return redirect_back(fallback_location: user_detail_path(user))
     end
-    ## 対象ディレクトリ
-    upload_dir = Rails.root.join("public", params[:id].to_s)
-    ## ダウンロードするファイルのフルパス
     file_name = skill_sheet.first.file_name
-    upload_file_path = upload_dir + file_name
     ## アップロード先のファイルが存在しない場合もエラー
-    unless File.exists?(upload_file_path)
+    fileExistFlag = true
+    if Rails.env.production? ## 本番(ステージング)環境
+      bucket = Aws::S3::Resource.new(:region => ENV['AWS_S3_REGION'], :access_key_id => ENV['AWS_ACCESS_KEY_ID'], :secret_access_key => ENV['AWS_SECRET_ACCESS_KEY']).bucket(ENV['S3_BUCKET_NAME'])
+      fileExistFlag = false unless bucket.object(params[:id].to_s + '/' + file_name).exists?
+    else
+      ## ダウンロードするファイルのフルパス
+      upload_dir = Rails.root.join("public", params[:id].to_s)
+      upload_file_path = upload_dir + file_name
+      fileExistFlag = false unless File.exists?(upload_file_path)
+    end
+    unless fileExistFlag
       user = User.find(params[:id])
       flash[:danger] = '対象のファイルが削除されたかファイル名に相違があります。'
       return redirect_back(fallback_location: user_detail_path(user))
