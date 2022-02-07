@@ -63,7 +63,7 @@
     });
 
     // ファイル(PDF or xls or xlsx形式)選択された場合に「アップロード」ボタンが活性化するメソッド
-    $('[name=skillSheet]').change(function() {
+    $(document).on('change', '[name=skillSheet]', function() {
       if(!$.isEmptyObject($(this).val())) {
         $('#upload').attr('disabled', false);
       } else {
@@ -73,7 +73,7 @@
     });
 
     // 「アップロード」ボタンを押下した場合の処理
-    $('#upload').click(function(){
+    $(document).on('click', '#upload', function() {
       // 活性化のみ
       if(!$(this).attr('disabled')) {
         var formData = new FormData($('#uploadForm').get(0));
@@ -81,6 +81,21 @@
         formData.append("id", employeeNumber);
         upload(formData);
       }
+    });
+
+    // 「アップロードし直す」ボタン押下処理
+    $(document).on('click', '#reUpload', function() {
+      // スキルシート枠のtdタグ書き換え
+      $('#tdSkillSheet').html(
+        '<form id="uploadForm">'
+          + '<input type="file" id="skillSheet" name="skillSheet" accept=".xls,.xlsx,.pdf" style="height:30px; margin-bottom:0px;">'
+          + '<div id="upload" class="btn btn-primary" style="margin-top:5px;">アップロード</div>'
+        + '</form>'
+      );
+      // 「アップロード」ボタンは非活性
+      $('#upload').attr('disabled', true);
+      // スキルシートの高さ調整
+      $('#thSkillSheet').height($('td#tdSkillSheet').height());
     });
 
     // ファイルオブジェクトをもとにファイルアップロード処理を呼び出すメソッド
@@ -259,6 +274,8 @@
           <td id="tdSkillSheet" style="text-align:left;">
             <% if @skillSheetInfo.present? %>
               <%= link_to @skillSheetInfo.file_name, user_download_path(@user.employee_number), method: :post %>
+              <br>
+              <div id="reUpload" class="btn btn-primary" style="margin-top:5px;">アップロードし直す</div>
             <% else %>
               <form id="uploadForm">
                 <input type="file" id="skillSheet" name="skillSheet" accept=".xls,.xlsx,.pdf" style="height:30px; margin-bottom:0px;">
