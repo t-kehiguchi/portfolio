@@ -17,7 +17,7 @@ gem 'jquery-rails',            '4.3.1'
 gem 'turbolinks',              '5.0.1'
 gem 'jbuilder',                '2.7.0'
 gem 'roo'
-gem 'mysql2'
+gem 'mysql2',                  '0.5.3'
 gem 'coffee-script-source',    '1.8.0'
 gem 'aws-sdk'
 
