@@ -1,6 +1,6 @@
 source 'https://rubygems.org'
 
-ruby "2.6.6"
+ruby "3.3.0"
 
 gem 'rails',                   '>= 5.1.7'
 gem 'rails-i18n'
@@ -29,7 +29,7 @@ end
 
 group :development do
   gem 'web-console',           '3.5.1'
-  gem 'listen',                '3.1.5'
+  gem 'listen',                '>= 3.1.5'
   gem 'spring',                '2.0.2'
   gem 'spring-watcher-listen', '2.0.1'
   gem 'wdm',                   '>= 0.1.0'
