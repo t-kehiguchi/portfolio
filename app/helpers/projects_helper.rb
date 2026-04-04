@@ -2,7 +2,7 @@ module ProjectsHelper
 
   ## 単価を金額表示(3桁区切り)にするメソッド
   def getPriceDisplay(price)
-    return price.present? ? price.to_s(:delimited).concat("円") : ""
+    return price.present? ? price.to_formatted_s(:delimited).concat("円") : ""
   end
 
   ## スキルIDからスキル名を取得するメソッド
@@ -21,12 +21,12 @@ module ProjectsHelper
     ## 一旦400000円～1000000円
     for i in 4..10
       if i == 4
-        price["<= "+(i*100000).to_s] = "～ "+(i*100000).to_s(:delimited).concat("円")
+        price["<= "+(i*100000).to_s] = "～ "+(i*100000).to_formatted_s(:delimited).concat("円")
       elsif i == 10
-        price["BETWEEN "+((i-1)*100000).to_s+" AND "+(i*100000).to_s] = ((i-1)*100000).to_s(:delimited).concat("円 ～ ")+(i*100000).to_s(:delimited).concat("円")
-        price[">= "+(i*100000).to_s] = (i*100000).to_s(:delimited).concat("円 ～")
+        price["BETWEEN "+((i-1)*100000).to_s+" AND "+(i*100000).to_s] = ((i-1)*100000).to_formatted_s(:delimited).concat("円 ～ ")+(i*100000).to_formatted_s(:delimited).concat("円")
+        price[">= "+(i*100000).to_s] = (i*100000).to_formatted_s(:delimited).concat("円 ～")
       else
-        price["BETWEEN "+((i-1)*100000).to_s+" AND "+(i*100000).to_s] = ((i-1)*100000).to_s(:delimited).concat("円 ～ ")+(i*100000).to_s(:delimited).concat("円")
+        price["BETWEEN "+((i-1)*100000).to_s+" AND "+(i*100000).to_s] = ((i-1)*100000).to_formatted_s(:delimited).concat("円 ～ ")+(i*100000).to_formatted_s(:delimited).concat("円")
       end
     end
     return price

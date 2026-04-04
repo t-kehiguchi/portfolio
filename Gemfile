@@ -2,15 +2,15 @@ source 'https://rubygems.org'
 
 ruby "3.3.0"
 
-gem 'rails',                   '>= 5.1.7'
+gem 'rails',                   '~> 7.1.0'
 gem 'rails-i18n'
 gem 'bcrypt',                  git: 'https://github.com/codahale/bcrypt-ruby.git', require: 'bcrypt'
-gem 'faker',                   '1.7.3'
-gem 'will_paginate',           '>= 3.1.6'
+gem 'faker',                   '~> 3.0'
+gem 'will_paginate',           '~> 3.3'
 gem 'bootstrap-will_paginate', '1.0.0'
 gem 'bootstrap-sass',          '3.4.1'
-gem 'puma',                    '4.3.12'
-gem 'sass-rails',              '5.0.6'
+gem 'puma',                    '~> 6.1'
+gem 'sass-rails',              '6.0.0'
 gem 'uglifier',                '3.2.0'
 gem 'coffee-rails',            '4.2.2'
 gem 'jquery-rails',            '4.3.1'
@@ -36,7 +36,7 @@ group :development do
 end
 
 group :test do
-  gem 'rails-controller-testing', '1.0.2'
+  gem 'rails-controller-testing', '>= 1.0.5'
   gem 'minitest',                 '5.10.3'
   gem 'minitest-reporters',       '1.1.14'
   gem 'guard',                    '2.13.0'
